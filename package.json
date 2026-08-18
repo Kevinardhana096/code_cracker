@@ -1,0 +1,12 @@
+{
+  "name": "code-cracker-uat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend UAT tooling for Code Cracker",
+  "scripts": {
+    "mcp:playwright": "npx @playwright/mcp --browser chromium"
+  },
+  "devDependencies": {
+    "@playwright/mcp": "^0.0.78"
+  }
+}

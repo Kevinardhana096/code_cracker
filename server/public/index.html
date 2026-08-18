@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Cracker — Battle of Champions 2026</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="terminal-dots"><span></span><span></span><span></span></div>
+      <h1 id="title">CODE CRACKER<span class="cursor"></span></h1>
+      <p>battle_of_champions // 2026</p>
+    </div>
+    <div class="status-group">
+      <div id="header-team-badge" class="badge hidden">
+        <span id="header-team-name">TIM01</span>
+      </div>
+      <div id="header-mode-badge" class="badge hidden">SIMULASI</div>
+      <div id="header-timer" class="badge timer hidden">00:00</div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main id="app-main">
+
+    <!-- LOGIN VIEW -->
+    <section id="view-login" class="view">
+      <div class="card">
+        <h2>Masuk pertandingan</h2>
+        <p>Masukkan kode tim untuk mulai mengerjakan soal.</p>
+        <form id="login-form">
+          <label for="login-code">Kode tim</label>
+          <div class="input-wrap">
+            <input type="text" id="login-code" placeholder="TIM01" autocomplete="off" required>
+          </div>
+          <button type="submit" class="submit">Bergabung</button>
+        </form>
+        <div id="login-error" class="error-slot hidden"></div>
+      </div>
+    </section>
+
+    <!-- WAITING VIEW -->
+    <section id="view-waiting" class="view hidden">
+      <div class="card text-center">
+        <h2>Menunggu babak dimulai</h2>
+        <p id="waiting-team-label" class="badge-label"></p>
+        <p>Panitia akan segera memulai babak pengerjaan soal. Harap bersiap.</p>
+        <div class="terminal-loader"><span></span><span></span><span></span></div>
+      </div>
+    </section>
+
+    <!-- CASE FILE VIEW -->
+    <section id="view-case-file" class="view hidden">
+      <div class="card text-center">
+        <h2>Case File</h2>
+        <p>Baca Case File fisik yang dibagikan panitia. Waktu membaca berlaku serentak untuk semua tim.</p>
+        <div class="resolution-timer-box">
+          <span>WAKTU MEMBACA</span>
+          <div class="timer-value-lg" id="case-file-timer">02:00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME VIEW -->
+    <section id="view-game" class="view view-game-layout hidden">
+      <div class="game-hud-card">
+        <div class="hud-top">
+          <span class="hud-tag" id="game-level-badge">LEVEL 1 // CRIME SCENE</span>
+          <div class="hud-timer">
+            <span class="hud-label">SISA WAKTU</span>
+            <span class="hud-value" id="game-timer">05:00</span>
+          </div>
+        </div>
+        <div class="timer-bar-container">
+          <div class="timer-bar" id="timer-bar"></div>
+        </div>
+      </div>
+
+      <div class="question-nav" id="question-nav"></div>
+
+      <div class="card question-card" id="question-card">
+        <div class="question-header">
+          <span class="question-number" id="question-number">SOAL 1 DARI 5</span>
+        </div>
+        <figure id="question-image-wrap" class="question-image-wrap hidden">
+          <img id="question-image" class="question-image" alt="Ilustrasi soal">
+        </figure>
+        <p class="question-text" id="question-text"></p>
+        <div id="answer-form">
+          <label>Pilih satu jawaban</label>
+          <div id="answer-options" class="answer-options"></div>
+          <div id="answer-draft-status" class="draft-status" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="score-card">
+        <span class="score-label">SKOR TIM</span>
+        <span class="score-value" id="game-score">0</span>
+      </div>
+    </section>
+
+    <!-- INVESTIGATION BOARD VIEW -->
+    <section id="view-investigation" class="view hidden">
+      <div class="card card-wide">
+        <h2>Papan Petunjuk // Clue Board</h2>
+        <p>Petunjuk terenkripsi yang berhasil diungkap oleh tim Anda:</p>
+        <div class="clue-timer-box">
+          <span>WAKTU MEMBACA CLUE</span>
+          <strong id="clue-timer">00:30</strong>
+        </div>
+        <div id="clue-list" class="clue-grid"></div>
+      </div>
+    </section>
+
+    <!-- RESOLUTION VIEW -->
+    <section id="view-resolution" class="view hidden">
+      <div class="card card-wide text-center">
+        <h2>Babak Akhir // Deduksi Kasus</h2>
+        <p>Berdasarkan seluruh clue yang terkumpul, siapakah "The Lost Champion" sejati?</p>
+        <div class="resolution-timer-box">
+          <span>WAKTU DEDUKSI</span>
+          <div class="timer-value-lg" id="resolution-timer">03:00</div>
+        </div>
+        <div id="candidate-list" class="candidate-grid"></div>
+      </div>
+    </section>
+
+    <!-- RESULTS VIEW -->
+    <section id="view-results" class="view hidden">
+      <div class="card card-wide text-center">
+        <h2>Hasil Akhir Pertandingan</h2>
+        <p>Rekapitulasi skor dan integritas hasil pengerjaan tim.</p>
+        <div id="results-content" class="results-table-wrap"></div>
+        <div class="verification-box">
+          <span class="verif-label">KODE VERIFIKASI SERVER</span>
+          <div class="verification-code" id="verification-code">---</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN VIEW -->
+    <section id="view-admin" class="view hidden">
+      <div id="admin-login" class="card">
+        <h2>Panel Kontrol Admin</h2>
+        <p>Otorisasi panitia pelaksana BOC 2026.</p>
+        <form id="admin-login-form">
+          <label for="admin-password">Password Admin</label>
+          <div class="input-wrap">
+            <input type="password" id="admin-password" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="submit">Otorisasi</button>
+        </form>
+        <div id="admin-error" class="error-slot hidden"></div>
+      </div>
+      <div id="admin-panel" class="hidden admin-panel-layout">
+        <div class="card card-wide">
+          <h2>Kontrol Fase Pertandingan</h2>
+          <div class="phase-display-badge" id="admin-phase">FASE: LOBBY</div>
+          <div class="admin-timer-box">
+            <span class="admin-timer-label">SISA WAKTU FASE</span>
+            <strong id="admin-timer">--:--</strong>
+            <div class="timer-bar-container">
+              <div class="timer-bar" id="admin-timer-bar"></div>
+            </div>
+          </div>
+          <div class="admin-controls" id="admin-controls"></div>
+        </div>
+        <div class="card card-wide">
+          <h2>Status Peringkat Tim (Real-Time)</h2>
+          <div id="admin-teams"></div>
+        </div>
+        <div class="card card-wide">
+          <h2>Keputusan Kompetisi</h2>
+          <p class="muted">Gunakan hanya berdasarkan keputusan resmi panitia. Semua tindakan dicatat dalam audit trail.</p>
+          <div class="admin-decision-grid">
+            <form id="admin-disqualify-form" class="admin-decision-form">
+              <h3>Diskualifikasi Tim</h3>
+              <label for="admin-dq-team">ID tim</label>
+              <input id="admin-dq-team" type="number" min="1" max="15" required>
+              <label for="admin-dq-reason">Alasan</label>
+              <textarea id="admin-dq-reason" rows="3" required></textarea>
+              <button type="submit" class="btn-control btn-reset">Catat Diskualifikasi</button>
+            </form>
+            <form id="admin-reinstate-form" class="admin-decision-form">
+              <h3>Pulihkan Status Tim</h3>
+              <label for="admin-reinstate-team">ID tim</label>
+              <input id="admin-reinstate-team" type="number" min="1" max="15" required>
+              <button type="submit" class="btn-control">Pulihkan Tim</button>
+            </form>
+            <form id="admin-playoff-form" class="admin-decision-form">
+              <h3>Catat Hasil Play-off</h3>
+              <label for="admin-playoff-order">ID tim sesuai urutan hasil</label>
+              <input id="admin-playoff-order" type="text" placeholder="Contoh: 3, 7, 11" required>
+              <label for="admin-playoff-notes">Catatan</label>
+              <textarea id="admin-playoff-notes" rows="3"></textarea>
+              <button type="submit" class="btn-control btn-start">Simpan Hasil Play-off</button>
+            </form>
+          </div>
+          <div id="admin-decision-message" class="error-slot hidden"></div>
+          <h3>Audit Trail</h3>
+          <div id="admin-audit"></div>
+        </div>
+        <div class="card card-wide">
+          <h2>Daftar Soal &amp; Status Gambar</h2>
+          <p>Gunakan ID soal berikut untuk menamai file <code>q_&lt;id&gt;.&lt;ekstensi&gt;</code>.</p>
+          <div id="admin-questions"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD VIEW -->
+    <section id="view-leaderboard" class="view hidden">
+      <div class="card card-wide">
+        <div class="leaderboard-header">
+          <h2>Papan Peringkat Resmi</h2>
+          <p>5 Tim Teratas Berhak Lolos ke Babak Selanjutnya</p>
+          <div class="leaderboard-status">
+            <span id="leaderboard-mode">MODE: -</span>
+            <span id="leaderboard-phase">FASE: -</span>
+            <strong id="leaderboard-timer">--:--</strong>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama Tim</th>
+                <th>Total Skor</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>SISTEM CERDAS CERMAT &mdash; SESI TERENKRIPSI</footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/vendor/katex/katex.min.js"></script>
+  <script src="/js/socket.js"></script>
+  <script src="/js/views/login.js"></script>
+  <script src="/js/views/game.js"></script>
+  <script src="/js/views/investigation.js"></script>
+  <script src="/js/views/resolution.js"></script>
+  <script src="/js/views/results.js"></script>
+  <script src="/js/views/leaderboard.js"></script>
+  <script src="/js/views/admin.js"></script>
+  <script src="/js/app.js"></script>
+
+  <!-- Title Scramble Animation -->
+  <script>
+    (function(){
+      const el = document.getElementById('title');
+      if (!el) return;
+      const finalText = "CODE CRACKER";
+      const chars = "!<>-_\\/[]{}—=+*^?#________";
+      let frame = 0;
+      const totalFrames = 18;
+
+      function scramble(){
+        let out = "";
+        for(let i=0;i<finalText.length;i++){
+          if(finalText[i] === " "){ out += " "; continue; }
+          const progress = frame - i*1.1;
+          if(progress > totalFrames){
+            out += finalText[i];
+          } else if(progress > 0){
+            out += chars[Math.floor(Math.random()*chars.length)];
+          } else {
+            out += " ";
+          }
+        }
+        el.innerHTML = out + '<span class="cursor"></span>';
+        frame++;
+        if(frame < totalFrames + finalText.length){
+          setTimeout(scramble, 35);
+        } else {
+          el.innerHTML = finalText + '<span class="cursor"></span>';
+        }
+      }
+      scramble();
+    })();
+  </script>
+</body>
+</html>

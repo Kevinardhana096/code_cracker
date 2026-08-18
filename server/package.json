@@ -1,0 +1,19 @@
+{
+  "name": "code-cracker",
+  "version": "1.0.0",
+  "description": "Battle of Champions 2026 — Code Cracker: The Investigation Ladder",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test:uat": "node test/uat-simulation.js",
+    "test:images": "node test/question-images.js",
+    "test:competition": "node test/competition.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "katex": "^0.18.1",
+    "socket.io": "^4.8.1",
+    "sql.js": "^1.12.0"
+  }
+}
