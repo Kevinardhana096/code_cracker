@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   on('auth:success', (data) => {
     updateModeBadge(data.mode);
+    setParticipantPauseState(Boolean(data.is_paused));
     if (data.phase && data.phase !== 'lobby') {
       const viewName = phaseToView(data.phase);
       showView(viewName);
@@ -172,13 +173,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
   on('phase:changed', (data) => {
     updateModeBadge(data.mode);
+    setParticipantPauseState(Boolean(data.is_paused));
     const viewName = phaseToView(data.phase);
-    showView(viewName);
+    if (!teamInfo.id) {
+      showView('login');
+      return;
+    }
+    if (currentView === viewName && viewName === 'game' && gameView) {
+      gameView.loadQuestions();
+    } else {
+      showView(viewName);
+    }
   });
 
   on('mode:changed', (data) => updateModeBadge(data.mode));
 
+  function setParticipantPauseState(isPaused) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminScreen = urlParams.get('admin') === '1' || urlParams.get('screen') === 'admin';
+    const isLeaderboardScreen = urlParams.get('screen') === 'leaderboard';
+    if (isAdminScreen || isLeaderboardScreen) {
+      return;
+    }
+
+    const overlay = document.getElementById('participant-pause-overlay');
+    if (overlay) {
+      if (isPaused) {
+        overlay.classList.remove('hidden');
+        document.body.classList.add('competition-paused');
+      } else {
+        overlay.classList.add('hidden');
+        document.body.classList.remove('competition-paused');
+      }
+    }
+
+    const interactiveElements = document.querySelectorAll(
+      '#app-main button, #app-main input, #app-main textarea, #app-main select, .nav-tab, .candidate-btn, #btn-prev-question, #btn-next-question, .question-nav-btn, .option-choice input'
+    );
+    if (isPaused) {
+      interactiveElements.forEach((el) => {
+        if (!el.hasAttribute('data-was-disabled')) {
+          el.setAttribute('data-was-disabled', el.disabled ? 'true' : 'false');
+        }
+        el.disabled = true;
+      });
+    } else {
+      interactiveElements.forEach((el) => {
+        if (el.getAttribute('data-was-disabled') === 'false') {
+          el.disabled = false;
+        }
+        el.removeAttribute('data-was-disabled');
+      });
+    }
+  }
+
+  on('timer:paused', () => setParticipantPauseState(true));
+  on('timer:resumed', () => setParticipantPauseState(false));
+
   on('timer:tick', (data) => {
+    setParticipantPauseState(Boolean(data.is_paused));
+
     const mins = Math.floor(data.remaining_seconds / 60);
     const secs = data.remaining_seconds % 60;
     const text = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
@@ -186,6 +240,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.phase === 'case_file') {
       const timer = document.getElementById('case-file-timer');
       if (timer) timer.textContent = text;
+    }
+    if (['level_1', 'level_2', 'level_3'].includes(data.phase)) {
+      const gameTimer = document.getElementById('game-timer');
+      if (gameTimer) {
+        gameTimer.textContent = text;
+        if (data.is_paused) {
+          gameTimer.classList.add('paused');
+        } else {
+          gameTimer.classList.remove('paused');
+        }
+      }
+      const bar = document.getElementById('timer-bar');
+      if (bar) {
+        const total = Math.max(0, Number(data.total_seconds) || 0);
+        const pct = total > 0 ? (data.remaining_seconds / total) * 100 : 0;
+        bar.style.width = pct + '%';
+        bar.style.background = data.is_paused ? '#eab308' : (pct < 20 ? '#e2645c' : '#d4a054');
+      }
     }
     if (['clue_1', 'clue_2', 'clue_3'].includes(data.phase)) {
       const timer = document.getElementById('clue-timer');
@@ -200,7 +272,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  on('timer:expired', () => {
+  on('timer:expired', (data) => {
+    if (['level_1', 'level_2', 'level_3'].includes(data && data.phase)) {
+      const gameTimer = document.getElementById('game-timer');
+      if (gameTimer) gameTimer.textContent = '00:00';
+      const bar = document.getElementById('timer-bar');
+      if (bar) bar.style.width = '0%';
+    }
     document.querySelectorAll('#answer-options input').forEach((input) => {
       input.disabled = true;
     });

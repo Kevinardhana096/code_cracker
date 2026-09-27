@@ -16,18 +16,38 @@ function getLocalIPs() {
 }
 
 function printQRInfo(port) {
+  const config = require('../config');
   const ips = getLocalIPs();
+
+  const printUrls = (baseUrl) => {
+    console.log(`    Peserta:      ${baseUrl}`);
+    console.log(`    Admin:        ${baseUrl}/?admin=1`);
+    console.log(`    Leaderboard:  ${baseUrl}/?screen=leaderboard`);
+  };
+
+  console.log('  Localhost (laptop server):');
+  printUrls(`http://localhost:${port}`);
+  console.log('');
 
   if (ips.length === 0) {
     console.log('  [WARNING] No network interfaces detected.');
     console.log('  Make sure USB tethering is connected.');
-    return;
+  } else {
+    console.log('  Network interfaces:');
+    ips.forEach((ip) => {
+      console.log('');
+      console.log(`  ${ip.name} (${ip.address}):`);
+      printUrls(`http://${ip.address}:${port}`);
+    });
   }
+  console.log('');
 
-  console.log('  Network interfaces:');
-  ips.forEach((ip, i) => {
-    console.log(`    [${i + 1}] ${ip.name}: http://${ip.address}:${port}`);
-  });
+  console.log('============================================');
+  console.log('  Kredensial Admin (rahasia, jangan sebar):');
+  console.log(`    Password: ${config.ADMIN_PASSWORD}`);
+  console.log('');
+  console.log('  Kode login tim: server/data/team-login-codes.txt');
+  console.log('============================================');
   console.log('');
 }
 

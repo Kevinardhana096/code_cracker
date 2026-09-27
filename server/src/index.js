@@ -1,3 +1,6 @@
+// Muat variabel lingkungan dari server/.env (jika ada) sebelum modul lain dibaca.
+require('./load-env');
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -29,11 +32,12 @@ app.use((_req, res, next) => {
     'X-Frame-Options': 'DENY',
     'Referrer-Policy': 'no-referrer',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws: wss:; font-src 'self'",
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' ws: wss:; font-src 'self'",
   });
   next();
 });
-app.use(express.json({ limit: '32kb' }));
+// Limit 8mb agar muat gambar soal yang diunggah sebagai base64 (5 MB ≈ 6.7 MB base64).
+app.use(express.json({ limit: '8mb' }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/api', authRoutes);

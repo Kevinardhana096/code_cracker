@@ -37,10 +37,10 @@ function transition(newPhase) {
   if (isTimedPhase) {
     const duration = getDurationForPhase(newPhase, state.mode);
     const now = Math.floor(Date.now() / 1000);
-    run('UPDATE game_state SET phase = ?, level_started_at = ?, level_duration_seconds = ? WHERE id = 1',
+    run('UPDATE game_state SET phase = ?, level_started_at = ?, level_duration_seconds = ?, is_paused = 0, paused_remaining_seconds = NULL WHERE id = 1',
       [newPhase, now, duration]);
   } else {
-    run('UPDATE game_state SET phase = ?, level_started_at = NULL, level_duration_seconds = NULL WHERE id = 1',
+    run('UPDATE game_state SET phase = ?, level_started_at = NULL, level_duration_seconds = NULL, is_paused = 0, paused_remaining_seconds = NULL WHERE id = 1',
       [newPhase]);
   }
 
@@ -62,7 +62,7 @@ function resetMode(mode) {
   db.run('DELETE FROM clues_unlocked WHERE mode = ?', [mode]);
   db.run('DELETE FROM final_resolutions WHERE mode = ?', [mode]);
   db.run(
-    'UPDATE game_state SET mode = ?, phase = ?, level_started_at = NULL, level_duration_seconds = NULL WHERE id = 1',
+    'UPDATE game_state SET mode = ?, phase = ?, level_started_at = NULL, level_duration_seconds = NULL, is_paused = 0, paused_remaining_seconds = NULL WHERE id = 1',
     [mode, 'lobby']
   );
   saveDb();
@@ -72,7 +72,11 @@ function resetMode(mode) {
 
 function getRemainingSeconds() {
   const state = getState();
-  if (!state || !state.level_started_at || !state.level_duration_seconds) {
+  if (!state) return 0;
+  if (state.is_paused) {
+    return Math.max(0, state.paused_remaining_seconds || 0);
+  }
+  if (!state.level_started_at || !state.level_duration_seconds) {
     return 0;
   }
 
@@ -80,6 +84,36 @@ function getRemainingSeconds() {
   const elapsed = now - state.level_started_at;
   const remaining = state.level_duration_seconds - elapsed;
   return Math.max(0, remaining);
+}
+
+function isPaused() {
+  const state = getState();
+  return Boolean(state && state.is_paused);
+}
+
+function pauseTimer() {
+  const state = getState();
+  if (!state) return { ok: false, error: 'State game tidak ditemukan' };
+  if (state.is_paused) return { ok: false, error: 'Timer sudah dalam keadaan jeda' };
+  if (!state.level_started_at || !state.level_duration_seconds) {
+    return { ok: false, error: 'Tidak ada timer aktif yang dapat dijeda' };
+  }
+  const remaining = getRemainingSeconds();
+  run('UPDATE game_state SET is_paused = 1, paused_remaining_seconds = ? WHERE id = 1', [remaining]);
+  saveDb();
+  return { ok: true, remaining_seconds: remaining };
+}
+
+function resumeTimer() {
+  const state = getState();
+  if (!state) return { ok: false, error: 'State game tidak ditemukan' };
+  if (!state.is_paused) return { ok: false, error: 'Timer tidak sedang dijeda' };
+  const remaining = Math.max(0, state.paused_remaining_seconds || 0);
+  const now = Math.floor(Date.now() / 1000);
+  run('UPDATE game_state SET is_paused = 0, paused_remaining_seconds = NULL, level_started_at = ?, level_duration_seconds = ? WHERE id = 1',
+    [now, remaining]);
+  saveDb();
+  return { ok: true, remaining_seconds: remaining };
 }
 
 function isTimerExpired() {
@@ -106,6 +140,9 @@ module.exports = {
   isValidMode,
   transition,
   getRemainingSeconds,
+  isPaused,
+  pauseTimer,
+  resumeTimer,
   isTimerExpired,
   isActiveLevel,
   getLevelForPhase,

@@ -11,10 +11,14 @@ function getTeamScore(teamId, mode = getCurrentMode()) {
     'SELECT COALESCE(SUM(score), 0) as math_score FROM level_results WHERE team_id = ? AND mode = ?',
     [teamId, mode]
   );
-  const resolution = queryOne(
-    'SELECT COALESCE(bonus_points, 0) as bonus FROM final_resolutions WHERE team_id = ? AND mode = ?',
-    [teamId, mode]
-  );
+  const gameState = queryOne('SELECT phase FROM game_state WHERE id = 1');
+  const includeBonus = gameState && gameState.phase === 'finished';
+  const resolution = includeBonus
+    ? queryOne(
+        'SELECT COALESCE(bonus_points, 0) as bonus FROM final_resolutions WHERE team_id = ? AND mode = ?',
+        [teamId, mode]
+      )
+    : null;
 
   const mathScore = math ? Number(math.math_score) : 0;
   const bonus = resolution ? Number(resolution.bonus) : 0;
@@ -44,6 +48,10 @@ function getLevelStats(teamId, mode, level) {
 }
 
 function getCompletionTime(teamId, mode) {
+  const gameState = queryOne('SELECT phase FROM game_state WHERE id = 1');
+  if (!gameState || gameState.phase !== 'finished') {
+    return null;
+  }
   const resolution = queryOne(
     "SELECT strftime('%s', submitted_at) as completion_time FROM final_resolutions WHERE team_id = ? AND mode = ?",
     [teamId, mode]
@@ -165,10 +173,14 @@ function getScoreBreakdown(teamId, mode = getCurrentMode()) {
   const l1 = getLevelStats(teamId, mode, 1);
   const l2 = getLevelStats(teamId, mode, 2);
   const l3 = getLevelStats(teamId, mode, 3);
-  const res = queryOne(
-    'SELECT bonus_points, chosen_candidate, is_correct FROM final_resolutions WHERE team_id = ? AND mode = ?',
-    [teamId, mode]
-  );
+  const gameState = queryOne('SELECT phase FROM game_state WHERE id = 1');
+  const includeBonus = gameState && gameState.phase === 'finished';
+  const res = includeBonus
+    ? queryOne(
+        'SELECT bonus_points, chosen_candidate, is_correct FROM final_resolutions WHERE team_id = ? AND mode = ?',
+        [teamId, mode]
+      )
+    : null;
   const status = queryOne(
     'SELECT status, reason FROM team_competition_status WHERE team_id = ? AND mode = ?',
     [teamId, mode]

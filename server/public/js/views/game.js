@@ -83,6 +83,11 @@ function initGameView() {
           return;
         }
 
+        const isNewLevel = levelInfo !== data.level || modeInfo !== data.mode;
+        if (isNewLevel) {
+          currentQ = 0;
+        }
+
         questions = data.questions || [];
         levelInfo = data.level;
         modeInfo = data.mode;
@@ -100,6 +105,14 @@ function initGameView() {
         showQuestion(Math.min(currentQ, Math.max(questions.length - 1, 0)));
         updateLevelBadge(data.level);
         fetchScore();
+
+        if (typeof data.remaining_seconds === 'number') {
+          const rem = Math.max(0, data.remaining_seconds);
+          const mins = Math.floor(rem / 60);
+          const secs = rem % 60;
+          const gameTimer = document.getElementById('game-timer');
+          if (gameTimer) gameTimer.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
 
         if (finalized) {
           setDraftStatus('Level sudah difinalisasi oleh server.', 'draft-finalized');
@@ -131,7 +144,7 @@ function initGameView() {
 
     (question.options || []).forEach((option) => {
       const label = document.createElement('label');
-      label.className = 'option-choice';
+      label.className = 'option-choice' + (option.image_url ? ' has-image' : '');
 
       const input = document.createElement('input');
       input.type = 'radio';
@@ -144,16 +157,26 @@ function initGameView() {
       letter.className = 'option-letter';
       letter.textContent = option.id;
 
-      const text = document.createElement('span');
-      text.className = 'option-text';
-      renderMathText(text, option.text);
+      const content = document.createElement('div');
+      content.className = 'option-content';
+
+      if (option.text) {
+        const text = document.createElement('span');
+        text.className = 'option-text';
+        renderMathText(text, option.text);
+        content.appendChild(text);
+      }
 
       if (option.image_url) {
         const image = document.createElement('img');
         image.className = 'option-image';
         image.src = option.image_url;
         image.alt = `Gambar opsi ${option.id}`;
-        label.appendChild(image);
+        image.onerror = () => {
+          image.remove();
+          label.classList.remove('has-image');
+        };
+        content.appendChild(image);
       }
 
       input.addEventListener('change', () => {
@@ -167,7 +190,7 @@ function initGameView() {
 
       label.appendChild(input);
       label.appendChild(letter);
-      label.appendChild(text);
+      label.appendChild(content);
       container.appendChild(label);
     });
   }
@@ -193,7 +216,61 @@ function initGameView() {
 
     renderOptions(q);
     renderNav();
+    updateNavButtons();
   }
+
+  function updateNavButtons() {
+    const prevBtn = document.getElementById('btn-prev-question');
+    const nextBtn = document.getElementById('btn-next-question');
+    const indicator = document.getElementById('question-nav-indicator');
+
+    const total = questions.length;
+    if (prevBtn) {
+      prevBtn.disabled = currentQ <= 0 || total === 0;
+    }
+    if (nextBtn) {
+      nextBtn.disabled = currentQ >= total - 1 || total === 0;
+    }
+    if (indicator) {
+      indicator.textContent = total > 0 ? `${currentQ + 1} / ${total}` : '- / -';
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQ > 0) {
+      showQuestion(currentQ - 1);
+    }
+  }
+
+  function nextQuestion() {
+    if (currentQ < questions.length - 1) {
+      showQuestion(currentQ + 1);
+    }
+  }
+
+  const prevBtn = document.getElementById('btn-prev-question');
+  const nextBtn = document.getElementById('btn-next-question');
+  if (prevBtn) prevBtn.addEventListener('click', prevQuestion);
+  if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
+
+  document.addEventListener('keydown', (e) => {
+    const gameSection = document.getElementById('view-game');
+    if (!gameSection || gameSection.classList.contains('hidden')) return;
+
+    const activeEl = document.activeElement;
+    if (activeEl) {
+      const tag = activeEl.tagName.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    }
+
+    if (e.key === 'ArrowLeft') {
+      prevQuestion();
+    } else if (e.key === 'ArrowRight') {
+      nextQuestion();
+    }
+  });
+
+  updateNavButtons();
 
   function scheduleDraftSave() {
     if (saveTimer) clearTimeout(saveTimer);
@@ -255,5 +332,5 @@ function initGameView() {
     badge.textContent = names[level] || 'LEVEL ' + level;
   }
 
-  return { loadQuestions, fetchScore };
+  return { loadQuestions, fetchScore, showQuestion, prevQuestion, nextQuestion, getCurrentQ: () => currentQ };
 }

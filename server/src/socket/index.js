@@ -50,6 +50,7 @@ function setupSocket(io) {
         mode: state.mode,
         remaining_seconds: game.getRemainingSeconds(),
         total_seconds: state.level_duration_seconds || 0,
+        is_paused: Boolean(state.is_paused),
       });
       console.log(`[Socket] Team authenticated: ${team.name} (ID: ${team_id})`);
 

@@ -89,6 +89,7 @@ router.post('/level-draft', authenticateTeam, (req, res) => {
   if (isDisqualified(teamId, mode)) {
     return res.status(403).json({ error: 'Tim telah didiskualifikasi oleh panitia' });
   }
+  if (game.isPaused()) return res.status(400).json({ error: 'Pertandingan sedang dijeda oleh panitia' });
   if (game.isTimerExpired()) return res.status(400).json({ error: 'Waktu habis' });
 
   const result = saveDraft(teamId, mode, level, req.body ? req.body.answers : null);
@@ -118,13 +119,11 @@ router.post('/submit-resolution', authenticateTeam, (req, res) => {
     return res.status(403).json({ error: 'Tim telah didiskualifikasi oleh panitia' });
   }
 
+  if (game.isPaused()) {
+    return res.status(400).json({ error: 'Pertandingan sedang dijeda oleh panitia' });
+  }
   if (game.isTimerExpired()) {
     return res.status(400).json({ error: 'Waktu habis' });
-  }
-
-  const existing = queryOne('SELECT id FROM final_resolutions WHERE team_id = ? AND mode = ?', [teamId, mode]);
-  if (existing) {
-    return res.status(400).json({ error: 'Kamu sudah memilih kandidat' });
   }
 
   const { candidate } = req.body;
@@ -140,24 +139,45 @@ router.post('/submit-resolution', authenticateTeam, (req, res) => {
   const isCorrect = candidate === config.CORRECT_CHAMPION;
   const bonus = isCorrect ? 30 : 0;
 
-  require('../db/db').run(
-    'INSERT INTO final_resolutions (team_id, mode, chosen_candidate, is_correct, bonus_points) VALUES (?, ?, ?, ?, ?)',
-    [teamId, mode, candidate, isCorrect ? 1 : 0, bonus]
-  );
-
-  const io = req.app.get('io');
-  if (io) {
-    const teamName = queryOne('SELECT name FROM teams WHERE id = ?', [teamId]);
-    io.emit('score:updated', {
-      team_id: teamId,
-      team_name: teamName ? teamName.name : '',
-      is_correct: isCorrect,
-      bonus,
-      mode,
-    });
+  const existing = queryOne('SELECT id FROM final_resolutions WHERE team_id = ? AND mode = ?', [teamId, mode]);
+  if (existing) {
+    require('../db/db').run(
+      'UPDATE final_resolutions SET chosen_candidate = ?, is_correct = ?, bonus_points = ?, submitted_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [candidate, isCorrect ? 1 : 0, bonus, existing.id]
+    );
+  } else {
+    require('../db/db').run(
+      'INSERT INTO final_resolutions (team_id, mode, chosen_candidate, is_correct, bonus_points) VALUES (?, ?, ?, ?, ?)',
+      [teamId, mode, candidate, isCorrect ? 1 : 0, bonus]
+    );
   }
 
-  res.json({ is_correct: isCorrect, bonus_points: bonus });
+  // NOTE: Do NOT emit score:updated with correctness or return is_correct / bonus_points to the client
+  // while the resolution phase is active. This prevents brute-force guessing.
+  res.json({
+    ok: true,
+    chosen_candidate: candidate,
+    message: 'Pilihan tersimpan. Kamu dapat mengubah pilihan selama waktu babak akhir masih ada.',
+  });
+});
+
+router.get('/resolution', authenticateTeam, (req, res) => {
+  const teamId = getTeamId(req);
+  if (!teamId) return res.status(401).json({ error: 'Unauthorized' });
+
+  const mode = game.getMode();
+  const state = game.getState();
+  const existing = queryOne(
+    'SELECT chosen_candidate FROM final_resolutions WHERE team_id = ? AND mode = ?',
+    [teamId, mode]
+  );
+
+  res.json({
+    mode,
+    phase: state.phase,
+    chosen_candidate: existing ? existing.chosen_candidate : null,
+    is_locked: state.phase !== 'resolution' || game.isTimerExpired(),
+  });
 });
 
 router.get('/clues', authenticateTeam, (req, res) => {
@@ -172,6 +192,11 @@ router.get('/clues', authenticateTeam, (req, res) => {
 router.get('/results', authenticateTeam, (req, res) => {
   const teamId = getTeamId(req);
   if (!teamId) return res.status(401).json({ error: 'Unauthorized' });
+
+  const state = game.getState();
+  if (state.phase !== 'finished') {
+    return res.status(400).json({ error: 'Hasil pertandingan belum tersedia' });
+  }
 
   const { getScoreBreakdown } = require('../services/scoring');
   const breakdown = getScoreBreakdown(teamId, game.getMode());

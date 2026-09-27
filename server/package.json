@@ -8,7 +8,10 @@
     "dev": "node --watch src/index.js",
     "test:uat": "node test/uat-simulation.js",
     "test:images": "node test/question-images.js",
-    "test:competition": "node test/competition.js"
+    "test:competition": "node test/competition.js",
+    "test:teams": "node test/team-management.js",
+    "test:verify": "node test/verify-code.js",
+    "test:navigation": "node test/game-navigation.js"
   },
   "dependencies": {
     "express": "^4.21.2",

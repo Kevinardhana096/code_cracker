@@ -30,6 +30,17 @@ function startTimer(io, onExpire) {
       return;
     }
 
+    if (state.is_paused) {
+      io.emit('timer:tick', {
+        phase: state.phase,
+        mode: state.mode,
+        remaining_seconds: state.paused_remaining_seconds || 0,
+        total_seconds: state.level_duration_seconds || 0,
+        is_paused: true,
+      });
+      return;
+    }
+
     const remaining = game.getRemainingSeconds();
     if (remaining <= 0) {
       const completedPhase = state.phase;
@@ -45,7 +56,7 @@ function startTimer(io, onExpire) {
         game.transition(nextPhase);
         io.emit('phase:changed', { phase: nextPhase, mode: game.getMode() });
 
-        if (['level_1', 'level_2', 'level_3'].includes(completedPhase)) {
+        if (['level_1', 'level_2', 'level_3', 'resolution'].includes(completedPhase)) {
           const { getLeaderboard } = require('./scoring');
           io.emit('leaderboard:update', { leaderboard: getLeaderboard(state.mode) });
         }
@@ -64,6 +75,7 @@ function startTimer(io, onExpire) {
       mode: state.mode,
       remaining_seconds: remaining,
       total_seconds: state.level_duration_seconds || 0,
+      is_paused: false,
     });
   }, 1000);
 }

@@ -125,9 +125,40 @@ function getQuestionImageMap(mode) {
   return imageMap;
 }
 
+// Menyimpan gambar yang diunggah dari panel admin sebagai q_<questionId>.<ext>.
+// Menghapus varian ekstensi lama untuk soal yang sama. Mengembalikan { issues } bila tidak valid.
+function saveQuestionImage(mode, questionId, extension, buffer) {
+  const ext = String(extension || '').toLowerCase().replace(/^\./, '');
+  if (!IMAGE_EXTENSIONS.has(ext)) {
+    return { ok: false, issues: [`Ekstensi .${ext} tidak didukung (gunakan: ${[...IMAGE_EXTENSIONS].join(', ')})`] };
+  }
+
+  const directory = path.join(QUESTIONS_ROOT, mode);
+  fs.mkdirSync(directory, { recursive: true });
+  const filePath = path.join(directory, `q_${questionId}.${ext}`);
+  fs.writeFileSync(filePath, buffer);
+
+  const inspection = inspectImage(filePath, ext);
+  if (!inspection.valid) {
+    fs.unlinkSync(filePath);
+    return { ok: false, issues: inspection.issues };
+  }
+
+  // Bersihkan varian lama (misal q_5.png diganti q_5.jpg)
+  for (const entry of fs.readdirSync(directory)) {
+    const match = /^q_(\d+)\.([a-z0-9]+)$/i.exec(entry);
+    if (match && Number(match[1]) === Number(questionId) && match[2].toLowerCase() !== ext) {
+      fs.unlinkSync(path.join(directory, entry));
+    }
+  }
+
+  return { ok: true, filename: `q_${questionId}.${ext}`, ...inspection };
+}
+
 module.exports = {
   getQuestionImageMap,
   getQuestionImageReport,
+  saveQuestionImage,
   MAX_FILE_SIZE_BYTES,
   MAX_IMAGE_DIMENSION,
 };

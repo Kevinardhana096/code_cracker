@@ -226,6 +226,12 @@ function initSchema() {
   addModeColumn('level_results');
   migrateFinalResolutions();
   addModeColumn('game_state');
+  if (!hasColumn('game_state', 'is_paused')) {
+    db.run("ALTER TABLE game_state ADD COLUMN is_paused INTEGER NOT NULL DEFAULT 0");
+  }
+  if (!hasColumn('game_state', 'paused_remaining_seconds')) {
+    db.run("ALTER TABLE game_state ADD COLUMN paused_remaining_seconds INTEGER");
+  }
 
   const existing = queryOne('SELECT id FROM game_state WHERE id = 1');
   if (!existing) {

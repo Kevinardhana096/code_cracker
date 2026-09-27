@@ -4,6 +4,9 @@
   "private": true,
   "description": "Frontend UAT tooling for Code Cracker",
   "scripts": {
+    "start": "npm --prefix server start",
+    "dev": "npm --prefix server run dev",
+    "setup": "npm --prefix server install",
     "mcp:playwright": "npx @playwright/mcp --browser chromium"
   },
   "devDependencies": {
