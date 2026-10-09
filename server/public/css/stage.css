@@ -129,35 +129,6 @@ body::before {
   gap: 16px;
 }
 
-.stage-audio-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  color: var(--text-mid);
-  padding: 5px 14px;
-  border-radius: 20px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.stage-audio-btn:hover {
-  border-color: var(--brass);
-  color: #fff;
-}
-.stage-audio-btn.muted {
-  color: var(--text-low);
-  opacity: 0.7;
-}
-.stage-audio-btn.active {
-  border-color: rgba(20, 184, 166, 0.4);
-  color: var(--teal-light);
-  background: rgba(20, 184, 166, 0.08);
-}
-
 .live-badge {
   display: inline-flex;
   align-items: center;

@@ -139,25 +139,6 @@ header {
   text-align: center;
 }
 
-.badge.audio-toggle-btn {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  color: var(--text-mid);
-  cursor: pointer;
-  padding: 8px 12px;
-  font-size: 14px;
-  line-height: 1;
-  transition: all 0.2s ease;
-}
-.badge.audio-toggle-btn:hover {
-  border-color: var(--brass);
-  color: var(--text-hi);
-}
-.badge.audio-toggle-btn.active {
-  border-color: rgba(20, 184, 166, 0.4);
-  background: rgba(20, 184, 166, 0.1);
-}
-
 /* Main Layout */
 main {
   position: relative;

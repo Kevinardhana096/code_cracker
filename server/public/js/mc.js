@@ -362,22 +362,13 @@
     });
 
     socket.on('timer:tick', (data) => {
-      if (!livePhaseEl || !data) return;
+      if (!livePhaseEl) return;
       const min = Math.floor(data.remaining_seconds / 60);
       const sec = data.remaining_seconds % 60;
       const pad = (n) => String(n).padStart(2, '0');
       const timeStr = `${pad(min)}:${pad(sec)}`;
       const phaseLabel = (data.phase || '').toUpperCase().replace(/_/g, ' ');
       livePhaseEl.textContent = `${phaseLabel} [${timeStr}]`;
-
-      // Haptic Vibration feedback on mobile devices
-      if (typeof navigator !== 'undefined' && navigator.vibrate && !data.is_paused) {
-        if (data.remaining_seconds <= 5 && data.remaining_seconds >= 1) {
-          navigator.vibrate(70);
-        } else if (data.remaining_seconds === 0) {
-          navigator.vibrate([180, 80, 180, 80, 250]);
-        }
-      }
     });
 
     function handleGameState(state) {

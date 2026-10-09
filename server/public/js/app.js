@@ -148,28 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
   investigationView = initInvestigationView();
   resolutionView = initResolutionView();
   resultsView = initResultsView();
-
-  // Participant Audio Toggle
-  const audioToggleBtn = document.getElementById('header-audio-toggle');
-  if (audioToggleBtn && typeof AudioSynth !== 'undefined') {
-    if (localStorage.getItem('cc_audio_muted') === null) {
-      AudioSynth.setMuted(true);
-    }
-    const updateParticipantAudioUI = () => {
-      const muted = AudioSynth.isMuted();
-      audioToggleBtn.textContent = muted ? '🔇' : '🔊';
-      audioToggleBtn.classList.toggle('active', !muted);
-      audioToggleBtn.title = muted
-        ? 'Suara Timer: Nonaktif (Klik untuk Aktifkan)'
-        : 'Suara Timer: Aktif (Klik untuk Matikan)';
-    };
-    audioToggleBtn.addEventListener('click', () => {
-      AudioSynth.unlock();
-      AudioSynth.toggleMute();
-      updateParticipantAudioUI();
-    });
-    updateParticipantAudioUI();
-  }
   leaderboardView = initLeaderboardView();
 
   on('auth:success', (data) => {
@@ -327,33 +305,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  on('timer:paused', () => {
-    setParticipantPauseState(true);
-    if (typeof AudioSynth !== 'undefined') AudioSynth.handlePaused();
-  });
-  on('timer:resuming', (data) => {
-    setParticipantResumingState(data.countdown);
-    if (typeof AudioSynth !== 'undefined') AudioSynth.handleResuming(data.countdown);
-  });
-  on('timer:resumed', () => {
-    setParticipantPauseState(false);
-    if (typeof AudioSynth !== 'undefined') AudioSynth.handleResumed();
-  });
-  on('timer:expired', () => {
-    if (typeof AudioSynth !== 'undefined') AudioSynth.playTimesUp();
-  });
-  on('phase:changed', (data) => {
-    if (typeof AudioSynth !== 'undefined' && data && data.phase) {
-      AudioSynth.handlePhaseChange(data.phase);
-    }
-  });
+  on('timer:paused', () => setParticipantPauseState(true));
+  on('timer:resuming', (data) => setParticipantResumingState(data.countdown));
+  on('timer:resumed', () => setParticipantPauseState(false));
 
   on('timer:tick', (data) => {
     if (!data.is_paused) {
       setParticipantPauseState(false);
-    }
-    if (typeof AudioSynth !== 'undefined') {
-      AudioSynth.handleTimerTick(data);
     }
 
     const mins = Math.floor(data.remaining_seconds / 60);

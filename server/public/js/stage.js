@@ -15,36 +15,9 @@
   const liveBadge = document.getElementById('live-status-badge');
   const livePhaseEl = document.getElementById('live-phase-val');
   const toast = document.getElementById('stage-toast');
-  const audioBtn = document.getElementById('btn-audio-toggle');
-  const audioIcon = document.getElementById('audio-icon');
-  const audioStatusText = document.getElementById('audio-status-text');
 
   let socket = null;
   let cursorTimer = null;
-
-  // Audio UI Sync
-  function updateAudioButtonUI() {
-    if (!audioBtn || typeof AudioSynth === 'undefined') return;
-    const isMuted = AudioSynth.isMuted();
-    if (isMuted) {
-      audioBtn.className = 'stage-audio-btn muted';
-      if (audioIcon) audioIcon.textContent = '🔇';
-      if (audioStatusText) audioStatusText.textContent = 'AUDIO MUTED';
-    } else {
-      audioBtn.className = 'stage-audio-btn active';
-      if (audioIcon) audioIcon.textContent = '🔊';
-      if (audioStatusText) audioStatusText.textContent = 'AUDIO ON';
-    }
-  }
-
-  if (audioBtn && typeof AudioSynth !== 'undefined') {
-    audioBtn.addEventListener('click', () => {
-      AudioSynth.unlock();
-      AudioSynth.toggleMute();
-      updateAudioButtonUI();
-    });
-    updateAudioButtonUI();
-  }
 
   // Auto-fade toast after 4 seconds
   if (toast) {
@@ -136,13 +109,6 @@
     } else if (e.key.toLowerCase() === 'h') {
       e.preventDefault();
       toggleHeader();
-    } else if (e.key.toLowerCase() === 'm') {
-      e.preventDefault();
-      if (typeof AudioSynth !== 'undefined') {
-        AudioSynth.unlock();
-        AudioSynth.toggleMute();
-        updateAudioButtonUI();
-      }
     }
   });
 
@@ -179,48 +145,16 @@
 
     socket.on('phase:changed', (data) => {
       handleServerState(data);
-      if (typeof AudioSynth !== 'undefined' && data && data.phase) {
-        AudioSynth.handlePhaseChange(data.phase);
-      }
     });
 
     socket.on('timer:tick', (data) => {
-      if (!data) return;
-      if (livePhaseEl) {
-        const min = Math.floor(data.remaining_seconds / 60);
-        const sec = data.remaining_seconds % 60;
-        const pad = (n) => String(n).padStart(2, '0');
-        const timeStr = `${pad(min)}:${pad(sec)}`;
-        const phaseLabel = (data.phase || '').toUpperCase().replace(/_/g, ' ');
-        livePhaseEl.textContent = `${phaseLabel} [${timeStr}]`;
-      }
-      if (typeof AudioSynth !== 'undefined') {
-        AudioSynth.handleTimerTick(data);
-      }
-    });
-
-    socket.on('timer:resuming', (data) => {
-      if (typeof AudioSynth !== 'undefined' && data) {
-        AudioSynth.handleResuming(data.countdown);
-      }
-    });
-
-    socket.on('timer:resumed', () => {
-      if (typeof AudioSynth !== 'undefined') {
-        AudioSynth.handleResumed();
-      }
-    });
-
-    socket.on('timer:paused', () => {
-      if (typeof AudioSynth !== 'undefined') {
-        AudioSynth.handlePaused();
-      }
-    });
-
-    socket.on('timer:expired', () => {
-      if (typeof AudioSynth !== 'undefined') {
-        AudioSynth.playTimesUp();
-      }
+      if (!livePhaseEl) return;
+      const min = Math.floor(data.remaining_seconds / 60);
+      const sec = data.remaining_seconds % 60;
+      const pad = (n) => String(n).padStart(2, '0');
+      const timeStr = `${pad(min)}:${pad(sec)}`;
+      const phaseLabel = (data.phase || '').toUpperCase().replace(/_/g, ' ');
+      livePhaseEl.textContent = `${phaseLabel} [${timeStr}]`;
     });
 
     function handleServerState(state) {
