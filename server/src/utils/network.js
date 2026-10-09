@@ -23,6 +23,7 @@ function printQRInfo(port) {
     console.log(`    Peserta:      ${baseUrl}`);
     console.log(`    Admin:        ${baseUrl}/?admin=1`);
     console.log(`    Leaderboard:  ${baseUrl}/?screen=leaderboard`);
+    console.log(`    Layar MC:     ${baseUrl}/mc`);
   };
 
   console.log('  Localhost (laptop server):');

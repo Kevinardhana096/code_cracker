@@ -4,8 +4,9 @@ let authPayload = null;
 function connectSocket() {
   socket = io({
     reconnection: true,
-    reconnectionAttempts: 10,
+    reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
   });
 
   socket.on('connect', () => {

@@ -60,6 +60,38 @@ async function main() {
   assert.strictEqual(game.isPaused(), false);
   assert.strictEqual(game.getState().phase, 'lobby');
 
+  console.log('Test 6: 5-second resume countdown test');
+  const t2 = game.transition('case_file');
+  assert.strictEqual(t2.ok, true);
+  assert.strictEqual(game.isPaused(), false);
+  game.pauseTimer();
+  assert.strictEqual(game.isPaused(), true);
+
+  const emittedEvents = [];
+  const fakeIo = {
+    emit: (event, payload) => {
+      emittedEvents.push({ event, payload });
+    },
+  };
+
+  const startRes = game.startResumeCountdown(fakeIo, 5);
+  assert.strictEqual(startRes.ok, true);
+  assert.strictEqual(game.isResuming(), true);
+  assert.strictEqual(game.getResumeCountdown(), 5);
+  assert.strictEqual(game.isPaused(), true); // During countdown, isPaused must still be true!
+  assert.strictEqual(emittedEvents.length, 1);
+  assert.strictEqual(emittedEvents[0].event, 'timer:resuming');
+  assert.strictEqual(emittedEvents[0].payload.countdown, 5);
+
+  // Canceling countdown should return to pause
+  game.cancelResumeCountdown();
+  assert.strictEqual(game.isResuming(), false);
+  assert.strictEqual(game.isPaused(), true);
+
+  // Resume directly
+  game.resumeTimer();
+  assert.strictEqual(game.isPaused(), false);
+
   console.log('ALL PAUSE TIMER TESTS PASSED!');
   fs.rmSync(dbPath, { force: true });
 }

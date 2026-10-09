@@ -44,6 +44,7 @@ function transition(newPhase) {
       [newPhase]);
   }
 
+  cancelResumeCountdown();
   return { ok: true, phase: newPhase };
 }
 
@@ -67,6 +68,7 @@ function resetMode(mode) {
   );
   saveDb();
 
+  cancelResumeCountdown();
   return { ok: true, mode, phase: 'lobby' };
 }
 
@@ -86,12 +88,32 @@ function getRemainingSeconds() {
   return Math.max(0, remaining);
 }
 
+let resumeCountdownTimer = null;
+let resumeCountdownSeconds = 0;
+
+function isResuming() {
+  return resumeCountdownTimer !== null && resumeCountdownSeconds > 0;
+}
+
+function getResumeCountdown() {
+  return resumeCountdownSeconds;
+}
+
+function cancelResumeCountdown() {
+  if (resumeCountdownTimer) {
+    clearInterval(resumeCountdownTimer);
+    resumeCountdownTimer = null;
+    resumeCountdownSeconds = 0;
+  }
+}
+
 function isPaused() {
   const state = getState();
-  return Boolean(state && state.is_paused);
+  return Boolean((state && state.is_paused) || isResuming());
 }
 
 function pauseTimer() {
+  cancelResumeCountdown();
   const state = getState();
   if (!state) return { ok: false, error: 'State game tidak ditemukan' };
   if (state.is_paused) return { ok: false, error: 'Timer sudah dalam keadaan jeda' };
@@ -102,6 +124,61 @@ function pauseTimer() {
   run('UPDATE game_state SET is_paused = 1, paused_remaining_seconds = ? WHERE id = 1', [remaining]);
   saveDb();
   return { ok: true, remaining_seconds: remaining };
+}
+
+function startResumeCountdown(io, seconds = 5, onFinished) {
+  cancelResumeCountdown();
+  const state = getState();
+  if (!state || !state.is_paused) {
+    return { ok: false, error: 'Timer tidak sedang dijeda' };
+  }
+
+  resumeCountdownSeconds = Math.max(1, Number(seconds) || 5);
+
+  if (io) {
+    io.emit('timer:resuming', {
+      countdown: resumeCountdownSeconds,
+      phase: state.phase,
+      mode: state.mode,
+      remaining_seconds: state.paused_remaining_seconds || 0,
+    });
+  }
+
+  resumeCountdownTimer = setInterval(() => {
+    resumeCountdownSeconds -= 1;
+    const currentState = getState();
+
+    if (!currentState || !currentState.is_paused) {
+      cancelResumeCountdown();
+      return;
+    }
+
+    if (resumeCountdownSeconds > 0) {
+      if (io) {
+        io.emit('timer:resuming', {
+          countdown: resumeCountdownSeconds,
+          phase: currentState.phase,
+          mode: currentState.mode,
+          remaining_seconds: currentState.paused_remaining_seconds || 0,
+        });
+      }
+    } else {
+      cancelResumeCountdown();
+      const resumeResult = resumeTimer();
+      if (resumeResult.ok) {
+        if (io) {
+          io.emit('timer:resumed', {
+            phase: currentState.phase,
+            mode: currentState.mode,
+            remaining_seconds: resumeResult.remaining_seconds,
+          });
+        }
+        if (onFinished) onFinished(resumeResult);
+      }
+    }
+  }, 1000);
+
+  return { ok: true, is_resuming: true, countdown: resumeCountdownSeconds };
 }
 
 function resumeTimer() {
@@ -143,6 +220,10 @@ module.exports = {
   isPaused,
   pauseTimer,
   resumeTimer,
+  isResuming,
+  getResumeCountdown,
+  startResumeCountdown,
+  cancelResumeCountdown,
   isTimerExpired,
   isActiveLevel,
   getLevelForPhase,

@@ -209,7 +209,23 @@ function initLeaderboardView() {
   on('leaderboard:update', update);
   on('timer:tick', updateTimer);
   on('timer:paused', (data) => updateTimer({ ...data, is_paused: true }));
-  on('timer:resumed', (data) => updateTimer({ ...data, is_paused: false }));
+  on('timer:resuming', (data) => {
+    const timer = document.getElementById('leaderboard-timer');
+    const timerPill = document.querySelector('.lb-stat-pill-timer');
+    if (timer) {
+      timer.textContent = `00:0${data.countdown}`;
+      timer.classList.add('resuming');
+      timer.classList.remove('paused');
+    }
+    if (timerPill) {
+      timerPill.classList.remove('is-paused');
+    }
+  });
+  on('timer:resumed', (data) => {
+    const timer = document.getElementById('leaderboard-timer');
+    if (timer) timer.classList.remove('resuming');
+    updateTimer({ ...data, is_paused: false });
+  });
 
   return { update, updateState, updateTimer };
 }

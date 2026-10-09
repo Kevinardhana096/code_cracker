@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layar Presentasi — Code Cracker BOC 2026</title>
+  <link rel="stylesheet" href="/css/mc.css">
+</head>
+<body>
+
+  <div class="mc-container">
+    <!-- Clean Header -->
+    <header class="mc-header">
+      <div class="mc-brand">
+        <div class="mc-dots"><span></span><span></span><span></span></div>
+        <div class="mc-logo">BOC 2026 // <span>CODE CRACKER</span></div>
+      </div>
+
+      <div class="mc-header-center">
+        <div id="live-status-badge" class="live-badge">
+          <span class="live-dot"></span>
+          <span>STATUS:</span>
+          <span id="live-phase-val" class="live-phase">STANDBY</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <button id="btn-auto-sync" class="btn-ctrl" title="Otomatis berganti slide mengikuti fase permainan aktif">
+          <span>⚡</span> Auto-Sync: OFF
+        </button>
+        <button id="btn-fullscreen" class="btn-ctrl" title="Layar Penuh Proyektor (Shortcut: F / F11)">
+          <span>⛶</span> Fullscreen
+        </button>
+      </div>
+    </header>
+
+    <!-- Slide Stage Viewport -->
+    <main class="slide-viewport">
+
+      <!-- SLIDE 1: COVER -->
+      <section class="slide active">
+        <div class="slide-card hero-center">
+          <span class="hero-tag">BATTLE OF CHAMPIONS 2026 // DETECTIVE DIVISION</span>
+          <h1 class="hero-title">CODE CRACKER</h1>
+          <h2 class="hero-subtitle">THE INVESTIGATION LADDER</h2>
+          <p class="slide-subtitle" style="max-width: 820px; margin: 0 auto 24px; font-size: 20px;">
+            Misi investigasi matematika bertingkat. Selesaikan tantangan kalkulasi, kumpulkan petunjuk bukti, dan pecahkan misteri <em>The Lost Champion</em>.
+          </p>
+          <div class="hero-badges">
+            <div class="hero-badge-pill">BERKAS: <strong>CASE FILE #001</strong></div>
+            <div class="hero-badge-pill">KASUS: <strong>THE LOST CHAMPION</strong></div>
+            <div class="hero-badge-pill">STATUS: <strong>UNSOLVED // INVESTIGASI AKTIF</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: GAMBARAN UMUM -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">PENGANTAR // GAMBARAN UMUM</span>
+          <h1 class="slide-title">Misi Tim Investigator</h1>
+          <p class="slide-subtitle">Sinergi kecepatan kalkulasi matematika dan ketajaman deduksi kasus.</p>
+
+          <div class="grid-3" style="margin-bottom: 24px;">
+            <div class="card-block highlight">
+              <div class="card-label">01. Peran Tim</div>
+              <div class="card-val-lg" style="color: var(--brass-light);">15 TIM</div>
+              <p class="card-text">
+                Peserta berperan sebagai tim detektif yang bertugas menyelidiki kasus misterius di lingkungan <em>Battle of Champions</em> melalui 3 level tantangan.
+              </p>
+            </div>
+
+            <div class="card-block teal-highlight">
+              <div class="card-label">02. Poin Matematika</div>
+              <div class="card-val-lg" style="color: var(--teal-light);">3 LEVEL</div>
+              <p class="card-text">
+                Tantangan matematika dengan tingkat kesulitan yang terus meningkat (Easy ➔ Medium ➔ Hard). Jawaban benar menghasilkan poin dan membuka petunjuk bukti.
+              </p>
+            </div>
+
+            <div class="card-block highlight">
+              <div class="card-label">03. Bonus Investigasi</div>
+              <div class="card-val-lg" style="color: var(--brass-light);">+30 POIN</div>
+              <p class="card-text">
+                Penilaian utama adalah akumulasi poin matematika. Deduksi investigasi yang akurat pada akhir babak memberikan poin bonus penentu kemenangan.
+              </p>
+            </div>
+          </div>
+
+          <div class="card-block" style="border-left: 4px solid var(--brass); padding: 18px 24px;">
+            <p style="font-size: 16px; color: #ffffff; line-height: 1.5;">
+              <strong style="color: var(--brass-light);">Kunci Keberhasilan:</strong> Semakin banyak soal yang dijawab dengan benar, semakin lengkap dan spesifik petunjuk yang dibuka di <strong>Investigation Board</strong> untuk mengungkap identitas Champion sesungguhnya.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: TEKNIS PELAKSANAAN & TATA TERTIB -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">REGULASI // TATA TERTIB</span>
+          <h1 class="slide-title">Teknis Pelaksanaan & Ketentuan</h1>
+          <p class="slide-subtitle">Aturan resmi penggunaan perangkat, jaringan offline, dan integritas kompetisi.</p>
+
+          <div class="grid-2">
+            <div class="card-block">
+              <div class="card-label" style="font-size: 15px; margin-bottom: 16px;">Ketentuan Tim & Perangkat</div>
+              <ul class="bullet-list">
+                <li><span class="bullet-dot">▪</span><div><strong>15 Tim Detektif:</strong> Lolos dari Tahap II (Suspect Dossier), tiap tim terdiri atas 3 orang.</div></li>
+                <li><span class="bullet-dot">▪</span><div><strong>1 Akun & 1 Perangkat:</strong> Setiap tim hanya mengakses platform dengan 1 perangkat aktif milik tim.</div></li>
+                <li><span class="bullet-dot">▪</span><div><strong>Jaringan Offline:</strong> Terhubung ke Hotspot Lokal Panitia. Seluruh perangkat wajib Mode Pesawat (WiFi only).</div></li>
+                <li><span class="bullet-dot">▪</span><div><strong>Mulai Serentak:</strong> Setiap level dimulai dan dikunci secara otomatis serentak oleh sistem server.</div></li>
+              </ul>
+            </div>
+
+            <div class="card-block" style="border-color: rgba(239, 68, 68, 0.4); background: var(--danger-bg);">
+              <div class="card-label" style="color: var(--danger); font-size: 15px; margin-bottom: 16px;">Sanksi Diskualifikasi (DQ)</div>
+              <p style="font-size: 15px; color: #ffffff; margin-bottom: 14px;">Tim dapat langsung didiskualifikasi dari perlombaan apabila:</p>
+              <ul class="bullet-list" style="gap: 14px;">
+                <li><span style="color: var(--danger);">❌</span><div>Berkomunikasi atau bekerja sama dengan tim lain.</div></li>
+                <li><span style="color: var(--danger);">❌</span><div>Menggunakan bantuan apa pun dari pihak di luar anggota tim.</div></li>
+                <li><span style="color: var(--danger);">❌</span><div>Mengakses internet luar atau sumber informasi tidak sah.</div></li>
+              </ul>
+              <div style="margin-top: 20px; padding-top: 14px; border-top: 1px solid rgba(239, 68, 68, 0.3); font-size: 14px; color: var(--danger); font-weight: 800;">
+                ⚠️ Keputusan panitia dan dewan juri bersifat mutlak dan tidak dapat diganggu gugat.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: PETA ALUR PERMAINAN -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">ROADMAP // ALUR INVESTIGASI</span>
+          <h1 class="slide-title">10 Tahap Permainan Code Cracker</h1>
+          <p class="slide-subtitle">Alur kompetisi berurutan dari pengenalan berkas hingga kualifikasi babak akhir.</p>
+
+          <div class="steps-grid">
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">1</div>
+                <div class="step-name">Briefing & Pembagian Case File</div>
+              </div>
+              <div class="step-dur">2 Menit</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">6</div>
+                <div class="step-name">Membaca & Analisis Clue 2</div>
+              </div>
+              <div class="step-dur">30 Detik</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">2</div>
+                <div class="step-name">Login Peserta ke Platform</div>
+              </div>
+              <div class="step-dur">Standby</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">7</div>
+                <div class="step-name">Level 3: Final Deduction</div>
+              </div>
+              <div class="step-dur">8 Menit</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">3</div>
+                <div class="step-name">Level 1: Crime Scene Analysis</div>
+              </div>
+              <div class="step-dur">5 Menit</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">8</div>
+                <div class="step-name">Membaca & Analisis Clue 3</div>
+              </div>
+              <div class="step-dur">30 Detik</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">4</div>
+                <div class="step-name">Membaca & Analisis Clue 1</div>
+              </div>
+              <div class="step-dur">30 Detik</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">9</div>
+                <div class="step-name">Final Case Resolution</div>
+              </div>
+              <div class="step-dur">3 Menit</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">5</div>
+                <div class="step-name">Level 2: Evidence Decoding</div>
+              </div>
+              <div class="step-dur">7 Menit</div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-left">
+                <div class="step-num">10</div>
+                <div class="step-name">Perhitungan Skor & Leaderboard</div>
+              </div>
+              <div class="step-dur">Final</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: CASE FILE #001 -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">BERKAS KASUS // CASE FILE #001</span>
+          <h1 class="slide-title">Case File: The Lost Champion</h1>
+          <p class="slide-subtitle">Sehari sebelum Grand Final, identitas Champion menghilang dari sistem. Teliti 4 profil kandidat terduga!</p>
+
+          <table class="stage-table">
+            <thead>
+              <tr>
+                <th>Nama Tim Kandidat</th>
+                <th>Divisi Asal</th>
+                <th>Rata-rata Skor</th>
+                <th>Juara Logika</th>
+                <th>Juara Bahasa Inggris</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color: var(--brass-light); font-size: 16px;">Alpha Team</strong></td>
+                <td>Divisi Alpha</td>
+                <td><strong>92</strong></td>
+                <td><span class="pill-badge green">Ya</span></td>
+                <td><span class="pill-badge red">Tidak</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--brass-light); font-size: 16px;">Atlas Team</strong></td>
+                <td>Divisi Alpha</td>
+                <td><strong>90</strong></td>
+                <td><span class="pill-badge red">Tidak</span></td>
+                <td><span class="pill-badge green">Ya</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--brass-light); font-size: 16px;">Aether Team</strong></td>
+                <td>Divisi Beta</td>
+                <td><strong>92</strong></td>
+                <td><span class="pill-badge green">Ya</span></td>
+                <td><span class="pill-badge green">Ya</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--brass-light); font-size: 16px;">Aurora Team</strong></td>
+                <td>Divisi Delta</td>
+                <td><strong>88</strong></td>
+                <td><span class="pill-badge red">Tidak</span></td>
+                <td><span class="pill-badge red">Tidak</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="card-block highlight" style="padding: 16px 24px;">
+            <p style="font-size: 15px; color: #ffffff; line-height: 1.5;">
+              📋 <strong>Instruksi Pengawas:</strong> Bacalah berkas fisik lembar kasus yang dibagikan. Cocokkan informasi dan petunjuk dari tiap level investigasi dengan tabel kandidat di atas untuk mempersempit kemungkinan.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: LEVEL 1 -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">LEVEL 01 // CRIME SCENE ANALYSIS</span>
+          <h1 class="slide-title">Level 1: Analisis TKP</h1>
+          <p class="slide-subtitle">Mengumpulkan petunjuk awal dari lokasi kejadian perkara melalui tantangan berhitung dasar.</p>
+
+          <div class="grid-3" style="margin-bottom: 20px;">
+            <div class="card-block">
+              <div class="card-label">Tingkat Kesulitan</div>
+              <div class="card-val-lg" style="color: var(--teal-light);">EASY</div>
+              <p class="card-text">5 Soal Pilihan Ganda (A-D)</p>
+            </div>
+
+            <div class="card-block">
+              <div class="card-label">Durasi Pengerjaan</div>
+              <div class="card-val-lg" style="color: var(--brass-light);">05:00</div>
+              <p class="card-text">Auto-lock saat waktu habis</p>
+            </div>
+
+            <div class="card-block">
+              <div class="card-label">Kisi-kisi Materi</div>
+              <p style="font-size: 15px; font-weight: 700; color: #ffffff; margin-top: 6px; line-height: 1.45;">
+                Operasi Hitung, Pola Bilangan, Pecahan, Aritmetika, Perbandingan
+              </p>
+            </div>
+          </div>
+
+          <div class="score-banner">
+            <div class="score-item">
+              <span class="score-label">Jawaban Benar</span>
+              <span class="score-num plus">+10 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Jawaban Salah</span>
+              <span class="score-num minus">-2 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Tidak Menjawab</span>
+              <span class="score-num empty">-1 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Skor Maksimal</span>
+              <span class="score-num" style="color: var(--brass-light);">50 POIN</span>
+            </div>
+          </div>
+
+          <div class="card-block highlight" style="padding: 14px 22px;">
+            <p style="font-size: 15px; color: #ffffff;">
+              🔍 <strong>Petunjuk Clue 1:</strong> Terbuka otomatis setelah 5 menit di <em>Investigation Board</em>. Tim dengan jawaban benar terbanyak akan membuka petunjuk pertama yang paling spesifik.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: LEVEL 2 -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">LEVEL 02 // EVIDENCE DECODING</span>
+          <h1 class="slide-title">Level 2: Dekode Bukti</h1>
+          <p class="slide-subtitle">Menganalisis bukti-bukti forensik berikutnya untuk mempersempit daftar tersangka.</p>
+
+          <div class="grid-3" style="margin-bottom: 20px;">
+            <div class="card-block">
+              <div class="card-label">Tingkat Kesulitan</div>
+              <div class="card-val-lg" style="color: var(--brass-light);">MEDIUM</div>
+              <p class="card-text">5 Soal Pilihan Ganda (A-D)</p>
+            </div>
+
+            <div class="card-block">
+              <div class="card-label">Durasi Pengerjaan</div>
+              <div class="card-val-lg" style="color: var(--brass-light);">07:00</div>
+              <p class="card-text">Auto-lock saat waktu habis</p>
+            </div>
+
+            <div class="card-block">
+              <div class="card-label">Kisi-kisi Materi</div>
+              <p style="font-size: 15px; font-weight: 700; color: #ffffff; margin-top: 6px; line-height: 1.45;">
+                Aljabar, Pola Bilangan, Barisan & Deret, Persamaan Linear
+              </p>
+            </div>
+          </div>
+
+          <div class="score-banner">
+            <div class="score-item">
+              <span class="score-label">Jawaban Benar</span>
+              <span class="score-num plus">+20 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Jawaban Salah</span>
+              <span class="score-num minus">-4 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Tidak Menjawab</span>
+              <span class="score-num empty">-2 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Skor Maksimal</span>
+              <span class="score-num" style="color: var(--brass-light);">100 POIN</span>
+            </div>
+          </div>
+
+          <div class="card-block highlight" style="padding: 14px 22px;">
+            <p style="font-size: 15px; color: #ffffff;">
+              🔍 <strong>Petunjuk Clue 2:</strong> Gabungkan petunjuk pertama dan kedua untuk mulai mengeliminasi kandidat yang tidak cocok dengan data investigasi.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: LEVEL 3 -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">LEVEL 03 // FINAL DEDUCTION</span>
+          <h1 class="slide-title">Level 3: Deduksi Akhir</h1>
+          <p class="slide-subtitle">Tantangan penalaran tingkat tinggi sebagai kesempatan terakhir memperoleh bukti kunci.</p>
+
+          <div class="grid-3" style="margin-bottom: 20px;">
+            <div class="card-block">
+              <div class="card-label">Tingkat Kesulitan</div>
+              <div class="card-val-lg" style="color: var(--danger);">HARD // HOTS</div>
+              <p class="card-text">5 Soal Pilihan Ganda (A-D)</p>
+            </div>
+
+            <div class="card-block">
+              <div class="card-label">Durasi Pengerjaan</div>
+              <div class="card-val-lg" style="color: var(--brass-light);">08:00</div>
+              <p class="card-text">Auto-lock saat waktu habis</p>
+            </div>
+
+            <div class="card-block">
+              <div class="card-label">Kisi-kisi Materi</div>
+              <p style="font-size: 15px; font-weight: 700; color: #ffffff; margin-top: 6px; line-height: 1.45;">
+                HOTS Problem Solving, Analisis Data, Kombinasi & Penalaran
+              </p>
+            </div>
+          </div>
+
+          <div class="score-banner">
+            <div class="score-item">
+              <span class="score-label">Jawaban Benar</span>
+              <span class="score-num plus">+30 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Jawaban Salah</span>
+              <span class="score-num minus">-6 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Tidak Menjawab</span>
+              <span class="score-num empty">-3 POIN</span>
+            </div>
+            <div class="score-divider"></div>
+            <div class="score-item">
+              <span class="score-label">Skor Maksimal</span>
+              <span class="score-num" style="color: var(--brass-light);">150 POIN</span>
+            </div>
+          </div>
+
+          <div class="card-block highlight" style="padding: 14px 22px;">
+            <p style="font-size: 15px; color: #ffffff;">
+              🔍 <strong>Petunjuk Clue 3:</strong> Kepingan bukti terakhir sebelum memasuki sesi penentuan pemecahan kasus Champion.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: FINAL CASE RESOLUTION -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">BABAK PENENTUAN // CASE RESOLUTION</span>
+          <h1 class="slide-title">Final Case Resolution</h1>
+          <p class="slide-subtitle">Sesi pemecahan kasus: Siapakah The Lost Champion yang sebenarnya?</p>
+
+          <div class="card-block teal-highlight" style="text-align: center; padding: 14px 20px; margin-bottom: 14px;">
+            <div style="font-size: 12px; font-family: var(--font-mono); color: var(--brass-light); margin-bottom: 4px; letter-spacing: 1.5px;">
+              PERTANYAAN INVESTIGASI RESMI
+            </div>
+            <div style="font-size: 19px; font-weight: 800; color: #ffffff; line-height: 1.35;">
+              "Berdasarkan seluruh hasil investigasi yang berhasil dikumpulkan, siapakah Champion Battle of Champions yang sebenarnya?"
+            </div>
+          </div>
+
+          <div class="grid-4" style="margin-bottom: 14px;">
+            <div class="card-block" style="text-align: center; padding: 12px 10px;">
+              <span class="card-label">KANDIDAT [A]</span>
+              <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 4px;">Alpha Team</div>
+            </div>
+            <div class="card-block" style="text-align: center; padding: 12px 10px;">
+              <span class="card-label">KANDIDAT [B]</span>
+              <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 4px;">Atlas Team</div>
+            </div>
+            <div class="card-block" style="text-align: center; padding: 12px 10px;">
+              <span class="card-label">KANDIDAT [C]</span>
+              <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 4px;">Aether Team</div>
+            </div>
+            <div class="card-block" style="text-align: center; padding: 12px 10px;">
+              <span class="card-label">KANDIDAT [D]</span>
+              <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 4px;">Aurora Team</div>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card-block" style="padding: 14px 16px;">
+              <div class="card-label">Waktu Diskusi</div>
+              <div class="card-val-lg" style="color: var(--brass-light); font-size: 24px;">3 MENIT</div>
+              <p class="card-text">Kunci 1 pilihan jawaban akhir tim.</p>
+            </div>
+            <div class="card-block highlight" style="padding: 14px 16px;">
+              <div class="card-label">Bonus Jawaban Benar</div>
+              <div class="card-val-lg" style="color: #10b981; font-size: 24px;">+30 POIN</div>
+              <p class="card-text">Jawaban salah bernilai 0 (tanpa penalti).</p>
+            </div>
+            <div class="card-block" style="padding: 14px 16px;">
+              <div class="card-label">Total Skor Maksimal</div>
+              <div class="card-val-lg" style="color: var(--brass-light); font-size: 24px;">330 POIN</div>
+              <p class="card-text">Akumulasi matematika + bonus kasus.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: PENENTUAN KELOLOSAN & TIE-BREAKER -->
+      <section class="slide">
+        <div class="slide-card">
+          <span class="slide-tag">HASIL AKHIR // LEADERBOARD & KUALIFIKASI</span>
+          <h1 class="slide-title">Penentuan Kelolosan & Tie-Breaker</h1>
+          <p class="slide-subtitle">Aturan resmi penentuan 5 tim yang berhak melaju ke babak berikutnya.</p>
+
+          <div class="grid-2" style="margin-bottom: 22px;">
+            <div class="card-block highlight" style="display: flex; align-items: center; gap: 24px; padding: 22px 28px;">
+              <div class="card-val-lg" style="color: var(--teal-light); font-size: 48px; margin-bottom: 0;">TOP 5</div>
+              <div>
+                <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-bottom: 4px;">Kuota Kelolosan Tim</div>
+                <p class="card-text">Hanya <strong>5 tim dengan total poin tertinggi</strong> yang dinyatakan lolos.</p>
+              </div>
+            </div>
+
+            <div class="card-block" style="padding: 22px 28px;">
+              <div class="card-label">Integritas Skor & Audit Trail</div>
+              <p class="card-text">
+                Setiap tim menerima <strong>Kode Verifikasi Digital (Hash)</strong> di layar hasil akhir sebagai jaminan keaslian data skor yang tercatat di server panitia.
+              </p>
+            </div>
+          </div>
+
+          <div class="card-block" style="border-color: var(--brass-dim);">
+            <div class="card-label" style="font-size: 14px; margin-bottom: 14px;">Hierarki Tie-Breaker (Jika Terdapat Total Poin Sama)</div>
+            <div class="grid-4" style="gap: 12px;">
+              <div style="background: var(--bg-2); padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border);">
+                <div style="font-family: var(--font-mono); font-size: 12px; color: var(--brass-light); font-weight: 800;">PRIORITAS 1</div>
+                <div style="font-weight: 700; font-size: 14px; margin-top: 6px; color: #ffffff;">Jumlah Jawaban Benar Terbanyak</div>
+              </div>
+              <div style="background: var(--bg-2); padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border);">
+                <div style="font-family: var(--font-mono); font-size: 12px; color: var(--brass-light); font-weight: 800;">PRIORITAS 2</div>
+                <div style="font-weight: 700; font-size: 14px; margin-top: 6px; color: #ffffff;">Jumlah Benar pada Level 3</div>
+              </div>
+              <div style="background: var(--bg-2); padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border);">
+                <div style="font-family: var(--font-mono); font-size: 12px; color: var(--brass-light); font-weight: 800;">PRIORITAS 3</div>
+                <div style="font-weight: 700; font-size: 14px; margin-top: 6px; color: #ffffff;">Waktu Submisi Tercepat</div>
+              </div>
+              <div style="background: var(--bg-2); padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border);">
+                <div style="font-family: var(--font-mono); font-size: 12px; color: var(--danger); font-weight: 800;">PRIORITAS 4</div>
+                <div style="font-weight: 700; font-size: 14px; margin-top: 6px; color: #ffffff;">Babak Play-off Panitia</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Clean Navigation Footer -->
+    <footer class="mc-footer">
+      <div class="nav-left">
+        <div class="slide-counter">
+          SLIDE <span id="slide-counter-val">01 / 10</span>
+        </div>
+        <div id="slide-dots" class="slide-dots-container"></div>
+        <select id="jump-select" class="jump-select" title="Lompat langsung ke slide tertentu"></select>
+      </div>
+
+      <div class="nav-right">
+        <button id="btn-prev" class="btn-nav" title="Slide Sebelumnya (Shortcut: Panah Kiri)">
+          <span>‹</span> Sebelumnya
+        </button>
+        <button id="btn-next" class="btn-nav btn-primary" title="Slide Berikutnya (Shortcut: Panah Kanan / Spasi)">
+          Selanjutnya <span>›</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/mc.js"></script>
+</body>
+</html>

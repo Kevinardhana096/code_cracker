@@ -499,6 +499,38 @@ button.submit:disabled {
   letter-spacing: 1px;
 }
 
+.hud-stats {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.hud-stat {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.hud-score {
+  position: relative;
+  padding-right: 18px;
+}
+
+.hud-score::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 3px;
+  bottom: 3px;
+  width: 1px;
+  background: var(--border);
+}
+
+.hud-score-value {
+  color: var(--brass);
+}
+
 .hud-timer {
   text-align: right;
 }
@@ -700,6 +732,31 @@ button.submit:disabled {
 }
 
 @media (max-width: 600px) {
+  .hud-top {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .hud-tag {
+    width: 100%;
+  }
+
+  .hud-stats {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .hud-score {
+    text-align: left;
+    align-items: flex-start;
+    padding-right: 0;
+  }
+
+  .hud-score::after {
+    display: none;
+  }
+
   .question-actions {
     gap: 10px;
     margin-top: 18px;
@@ -2652,5 +2709,139 @@ body.competition-paused footer {
 .lb-stat-pill-val.lb-timer-clock.paused {
   color: #b45309;
   animation: pauseBlink 1.5s infinite;
+}
+
+.lb-stat-pill-val.lb-timer-clock.resuming {
+  color: #059669;
+  font-weight: 900;
+  animation: countdownPop 0.4s ease-out;
+}
+
+/* Resuming Countdown Modal Styles */
+.pause-card-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pause-card-content.hidden {
+  display: none !important;
+}
+
+.countdown-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background: rgba(79, 216, 171, 0.15);
+  border: 1px solid rgba(79, 216, 171, 0.4);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--teal, #4fd8c4);
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 16px;
+}
+
+.countdown-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal, #4fd8c4);
+  box-shadow: 0 0 0 0 rgba(79, 216, 171, 0.7);
+  animation: countdownPulseDot 1s infinite;
+}
+
+@keyframes countdownPulseDot {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(79, 216, 171, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(79, 216, 171, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(79, 216, 171, 0);
+  }
+}
+
+.countdown-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+  letter-spacing: 1px;
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+}
+
+.countdown-display {
+  margin: 12px 0 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90px;
+}
+
+.countdown-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 80px;
+  font-weight: 900;
+  color: var(--brass, #d4a054);
+  text-shadow: 0 0 35px rgba(212, 160, 84, 0.6);
+  line-height: 1;
+}
+
+.countdown-animate {
+  animation: countdownPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes countdownPop {
+  0% { transform: scale(1.4); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.countdown-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #94a3b8;
+  margin: 0 0 20px 0;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.countdown-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.countdown-progress-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--brass));
+  border-radius: 9999px;
+  transition: width 0.9s linear;
+}
+
+/* Admin Countdown Timer Button */
+.btn-control.btn-countdown-timer {
+  background: #f59e0b;
+  color: #1a1206;
+  border-color: #f59e0b;
+  cursor: wait;
+  font-weight: 800;
+  animation: countdownBtnPulse 1s infinite alternate;
+}
+
+@keyframes countdownBtnPulse {
+  0% { opacity: 0.85; transform: scale(0.99); }
+  100% { opacity: 1; transform: scale(1.01); }
 }
 

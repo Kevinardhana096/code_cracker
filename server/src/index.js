@@ -6,7 +6,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const config = require('./config');
-const { initDb, saveDb } = require('./db/db');
+const { initDb, saveDb, saveDbSync } = require('./db/db');
 const { initSchema } = require('./db/schema');
 const { seedData } = require('./db/seed');
 const game = require('./services/game');
@@ -40,6 +40,10 @@ app.use((_req, res, next) => {
 app.use(express.json({ limit: '8mb' }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+app.get(['/mc', '/slides'], (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'mc.html'));
+});
+
 app.use('/api', authRoutes);
 app.use('/api', gameRoutes);
 app.use('/api/admin', adminRoutes);
@@ -52,7 +56,7 @@ async function start() {
   await initDb();
   initSchema();
   seedData();
-  saveDb();
+  saveDbSync();
 
   const setupSocket = require('./socket/index');
   setupSocket(io);
@@ -73,12 +77,12 @@ async function start() {
   }, 30000);
 
   process.on('SIGINT', () => {
-    saveDb();
+    saveDbSync();
     process.exit(0);
   });
 
   process.on('SIGTERM', () => {
-    saveDb();
+    saveDbSync();
     process.exit(0);
   });
 

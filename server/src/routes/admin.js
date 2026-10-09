@@ -113,10 +113,26 @@ router.get('/state', authenticateAdmin, (req, res) => {
     level_duration_seconds: state.level_duration_seconds,
     remaining_seconds: remaining,
     is_paused: Boolean(state.is_paused),
+    is_resuming: game.isResuming(),
+    countdown: game.getResumeCountdown(),
   });
 });
 
 router.post('/timer/pause', authenticateAdmin, (req, res) => {
+  if (game.isResuming()) {
+    game.cancelResumeCountdown();
+    const io = req.app.get('io');
+    const state = game.getState();
+    if (io) {
+      io.emit('timer:paused', {
+        phase: state.phase,
+        mode: state.mode,
+        remaining_seconds: state.paused_remaining_seconds,
+      });
+    }
+    return res.json({ ok: true, is_paused: true, remaining_seconds: state.paused_remaining_seconds });
+  }
+
   const result = game.pauseTimer();
   if (!result.ok) {
     return res.status(400).json(result);
@@ -143,29 +159,63 @@ router.post('/timer/pause', authenticateAdmin, (req, res) => {
 });
 
 router.post('/timer/resume', authenticateAdmin, (req, res) => {
-  const result = game.resumeTimer();
-  if (!result.ok) {
-    return res.status(400).json(result);
-  }
+  const state = game.getState();
+  if (!state) return res.status(400).json({ ok: false, error: 'State game tidak ditemukan' });
+  if (!state.is_paused) return res.status(400).json({ ok: false, error: 'Timer tidak sedang dijeda' });
 
   const io = req.app.get('io');
-  const state = game.getState();
-  if (io) {
-    io.emit('timer:resumed', {
-      phase: state.phase,
-      mode: state.mode,
-      remaining_seconds: result.remaining_seconds,
+  const { recordAudit } = require('../services/competition');
+
+  if (req.body && req.body.immediate) {
+    game.cancelResumeCountdown();
+    const result = game.resumeTimer();
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+    if (io) {
+      io.emit('timer:resumed', {
+        phase: state.phase,
+        mode: state.mode,
+        remaining_seconds: result.remaining_seconds,
+      });
+    }
+    recordAudit({
+      mode: game.getMode(),
+      action: 'TIMER_RESUMED',
+      details: { phase: state.phase, remaining_seconds: result.remaining_seconds },
+    });
+    return res.json({ ok: true, is_paused: false, remaining_seconds: result.remaining_seconds });
+  }
+
+  if (game.isResuming()) {
+    return res.json({
+      ok: true,
+      is_resuming: true,
+      countdown: game.getResumeCountdown(),
+      remaining_seconds: state.paused_remaining_seconds,
     });
   }
 
-  const { recordAudit } = require('../services/competition');
   recordAudit({
     mode: game.getMode(),
-    action: 'TIMER_RESUMED',
-    details: { phase: state.phase, remaining_seconds: result.remaining_seconds },
+    action: 'TIMER_RESUME_REQUESTED',
+    details: { phase: state.phase, remaining_seconds: state.paused_remaining_seconds, countdown: 5 },
   });
 
-  return res.json({ ok: true, is_paused: false, remaining_seconds: result.remaining_seconds });
+  const countdownResult = game.startResumeCountdown(io, 5, (resumeResult) => {
+    recordAudit({
+      mode: game.getMode(),
+      action: 'TIMER_RESUMED',
+      details: { phase: state.phase, remaining_seconds: resumeResult.remaining_seconds },
+    });
+  });
+
+  return res.json({
+    ok: true,
+    is_resuming: true,
+    countdown: countdownResult.countdown || 5,
+    remaining_seconds: state.paused_remaining_seconds,
+  });
 });
 
 router.get('/competition', authenticateAdmin, (_req, res) => {

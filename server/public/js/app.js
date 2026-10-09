@@ -94,6 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === '1';
   const isLeaderboard = urlParams.get('screen') === 'leaderboard';
+  const isMc = urlParams.get('screen') === 'mc' || urlParams.get('screen') === 'slides';
+
+  if (isMc) {
+    window.location.replace('/mc');
+    return;
+  }
 
   if (isLeaderboard) {
     document.body.classList.add('leaderboard-screen');
@@ -140,7 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   on('auth:success', (data) => {
     updateModeBadge(data.mode);
-    setParticipantPauseState(Boolean(data.is_paused));
+    if (data.is_resuming && data.countdown_seconds > 0) {
+      setParticipantResumingState(data.countdown_seconds);
+    } else {
+      setParticipantPauseState(Boolean(data.is_paused));
+    }
     if (data.phase && data.phase !== 'lobby') {
       const viewName = phaseToView(data.phase);
       showView(viewName);
@@ -188,6 +198,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
   on('mode:changed', (data) => updateModeBadge(data.mode));
 
+  function setParticipantResumingState(countdown) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminScreen = urlParams.get('admin') === '1' || urlParams.get('screen') === 'admin';
+    const isLeaderboardScreen = urlParams.get('screen') === 'leaderboard';
+    if (isAdminScreen || isLeaderboardScreen) {
+      return;
+    }
+
+    const overlay = document.getElementById('participant-pause-overlay');
+    const pausedCard = document.getElementById('pause-card-paused');
+    const resumingCard = document.getElementById('pause-card-resuming');
+    const countdownNum = document.getElementById('pause-countdown-number');
+    const countdownBar = document.getElementById('pause-countdown-bar');
+
+    if (overlay) {
+      overlay.classList.remove('hidden');
+      document.body.classList.add('competition-paused');
+    }
+    if (pausedCard) pausedCard.classList.add('hidden');
+    if (resumingCard) resumingCard.classList.remove('hidden');
+
+    if (countdownNum) {
+      countdownNum.textContent = countdown;
+      countdownNum.classList.remove('countdown-animate');
+      void countdownNum.offsetWidth;
+      countdownNum.classList.add('countdown-animate');
+    }
+
+    if (countdownBar) {
+      const pct = Math.max(0, Math.min(100, (countdown / 5) * 100));
+      countdownBar.style.width = pct + '%';
+    }
+
+    const interactiveElements = document.querySelectorAll(
+      '#app-main button, #app-main input, #app-main textarea, #app-main select, .nav-tab, .candidate-btn, #btn-prev-question, #btn-next-question, .question-nav-btn, .option-choice input'
+    );
+    interactiveElements.forEach((el) => {
+      if (!el.hasAttribute('data-was-disabled')) {
+        el.setAttribute('data-was-disabled', el.disabled ? 'true' : 'false');
+      }
+      el.disabled = true;
+    });
+  }
+
   function setParticipantPauseState(isPaused) {
     const urlParams = new URLSearchParams(window.location.search);
     const isAdminScreen = urlParams.get('admin') === '1' || urlParams.get('screen') === 'admin';
@@ -197,13 +251,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const overlay = document.getElementById('participant-pause-overlay');
+    const pausedCard = document.getElementById('pause-card-paused');
+    const resumingCard = document.getElementById('pause-card-resuming');
+
     if (overlay) {
       if (isPaused) {
         overlay.classList.remove('hidden');
         document.body.classList.add('competition-paused');
+        if (pausedCard) pausedCard.classList.remove('hidden');
+        if (resumingCard) resumingCard.classList.add('hidden');
       } else {
-        overlay.classList.add('hidden');
-        document.body.classList.remove('competition-paused');
+        if (resumingCard && !resumingCard.classList.contains('hidden')) {
+          const countdownNum = document.getElementById('pause-countdown-number');
+          if (countdownNum) countdownNum.textContent = 'MULAI!';
+          setTimeout(() => {
+            overlay.classList.add('hidden');
+            document.body.classList.remove('competition-paused');
+            if (pausedCard) pausedCard.classList.remove('hidden');
+            if (resumingCard) resumingCard.classList.add('hidden');
+          }, 350);
+        } else {
+          overlay.classList.add('hidden');
+          document.body.classList.remove('competition-paused');
+          if (pausedCard) pausedCard.classList.remove('hidden');
+          if (resumingCard) resumingCard.classList.add('hidden');
+        }
       }
     }
 
@@ -228,10 +300,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   on('timer:paused', () => setParticipantPauseState(true));
+  on('timer:resuming', (data) => setParticipantResumingState(data.countdown));
   on('timer:resumed', () => setParticipantPauseState(false));
 
   on('timer:tick', (data) => {
-    setParticipantPauseState(Boolean(data.is_paused));
+    if (!data.is_paused) {
+      setParticipantPauseState(false);
+    }
 
     const mins = Math.floor(data.remaining_seconds / 60);
     const secs = data.remaining_seconds % 60;

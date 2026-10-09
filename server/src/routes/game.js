@@ -228,6 +228,9 @@ router.get('/state', (_req, res) => {
     mode: state.mode,
     remaining_seconds: remaining,
     total_seconds: state.level_duration_seconds || 0,
+    is_paused: Boolean(state.is_paused),
+    is_resuming: Boolean(game.isResuming && game.isResuming()),
+    countdown_seconds: (game.getResumeCountdown && game.getResumeCountdown()) || 0,
   });
 });
 

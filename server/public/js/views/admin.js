@@ -144,7 +144,13 @@ function initAdminView() {
         document.getElementById('admin-phase').textContent =
           'Mode: ' + (data.mode || 'simulation').toUpperCase() + ' | Fase: ' + data.phase.toUpperCase();
         updateTimer(data);
-        renderControls(data.phase, data.mode || 'simulation', Boolean(data.is_paused));
+        renderControls(
+          data.phase,
+          data.mode || 'simulation',
+          Boolean(data.is_paused),
+          Boolean(data.is_resuming),
+          data.countdown
+        );
       })
       .catch(() => {});
   }
@@ -218,7 +224,7 @@ function initAdminView() {
     return index + 1 < PHASE_FLOW.length ? PHASE_LABELS[PHASE_FLOW[index + 1]] : 'Leaderboard Final';
   }
 
-  function renderControls(phase, mode, isPaused = false) {
+  function renderControls(phase, mode, isPaused = false, isResuming = false, countdown = 5) {
     const container = document.getElementById('admin-controls');
     container.innerHTML = '';
 
@@ -291,19 +297,30 @@ function initAdminView() {
       timerControlDiv.className = 'control-step control-timer-step';
 
       const pauseBtn = document.createElement('button');
-      pauseBtn.className = 'btn-control ' + (isPaused ? 'btn-resume-timer' : 'btn-pause-timer');
-      pauseBtn.innerHTML = isPaused ? '▶ LANJUTKAN TIMER (RESUME)' : '⏸ JEDA TIMER (PAUSE)';
-      pauseBtn.addEventListener('click', () => {
+      if (isResuming) {
+        pauseBtn.className = 'btn-control btn-countdown-timer';
         pauseBtn.disabled = true;
-        if (isPaused) {
-          resumeTimer();
-        } else {
-          pauseTimer();
-        }
-      });
+        pauseBtn.innerHTML = `⏳ BERSISIAP (${countdown}s)...`;
+      } else {
+        pauseBtn.className = 'btn-control ' + (isPaused ? 'btn-resume-timer' : 'btn-pause-timer');
+        pauseBtn.innerHTML = isPaused ? '▶ LANJUTKAN TIMER (RESUME)' : '⏸ JEDA TIMER (PAUSE)';
+        pauseBtn.addEventListener('click', () => {
+          pauseBtn.disabled = true;
+          if (isPaused) {
+            resumeTimer();
+          } else {
+            pauseTimer();
+          }
+        });
+      }
       timerControlDiv.appendChild(pauseBtn);
 
-      if (isPaused) {
+      if (isResuming) {
+        const pauseNotice = document.createElement('div');
+        pauseNotice.className = 'admin-pause-banner';
+        pauseNotice.innerHTML = `⏳ <strong>HITUNGAN MUNDUR RESUME (${countdown}s)</strong> — Pertandingan akan aktif otomatis dalam hitungan mundur.`;
+        timerControlDiv.appendChild(pauseNotice);
+      } else if (isPaused) {
         const pauseNotice = document.createElement('div');
         pauseNotice.className = 'admin-pause-banner';
         pauseNotice.innerHTML = '⏸ <strong>TIMER SEDANG DIJEDA</strong> — Pengiriman jawaban peserta dibekukan sementara.';
@@ -1064,6 +1081,20 @@ function initAdminView() {
 
   on('timer:paused', () => {
     if (adminToken) loadAdminState();
+  });
+
+  on('timer:resuming', (data) => {
+    if (!adminToken) return;
+    const pauseBtn = document.querySelector('.btn-resume-timer, .btn-pause-timer, .btn-countdown-timer');
+    if (pauseBtn) {
+      pauseBtn.className = 'btn-control btn-countdown-timer';
+      pauseBtn.disabled = true;
+      pauseBtn.innerHTML = `⏳ BERSISIAP (${data.countdown}s)...`;
+    }
+    const pauseNotice = document.querySelector('.admin-pause-banner');
+    if (pauseNotice) {
+      pauseNotice.innerHTML = `⏳ <strong>HITUNGAN MUNDUR RESUME (${data.countdown}s)</strong> — Pertandingan akan aktif otomatis dalam hitungan mundur.`;
+    }
   });
 
   on('timer:resumed', () => {

@@ -8,4 +8,5 @@ server/data/*.db.tmp
 server/data/team-login-codes.txt
 server/public/uploads/questions/simulation/q_987654.png
 frontend-uat-mobile.png
+screenshot-*.png
 server/.env

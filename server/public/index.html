@@ -72,9 +72,15 @@
       <div class="game-hud-card">
         <div class="hud-top">
           <span class="hud-tag" id="game-level-badge">LEVEL 1 // CRIME SCENE</span>
-          <div class="hud-timer">
-            <span class="hud-label">SISA WAKTU</span>
-            <span class="hud-value" id="game-timer">05:00</span>
+          <div class="hud-stats">
+            <div class="hud-stat hud-score">
+              <span class="hud-label">SKOR TIM</span>
+              <span class="hud-value hud-score-value" id="game-score">0</span>
+            </div>
+            <div class="hud-stat hud-timer">
+              <span class="hud-label">SISA WAKTU</span>
+              <span class="hud-value" id="game-timer">05:00</span>
+            </div>
           </div>
         </div>
         <div class="timer-bar-container">
@@ -109,10 +115,6 @@
         </div>
       </div>
 
-      <div class="score-card">
-        <span class="score-label">SKOR TIM</span>
-        <span class="score-value" id="game-score">0</span>
-      </div>
     </section>
 
     <!-- INVESTIGATION BOARD VIEW -->
@@ -428,26 +430,45 @@
   <!-- PARTICIPANT PAUSE MODAL OVERLAY (CENTERED) -->
   <div id="participant-pause-overlay" class="participant-pause-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pause-modal-title">
     <div class="pause-overlay-card">
-      <div class="pause-icon-badge">
-        <svg width="38" height="38" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-        </svg>
+      <div id="pause-card-paused" class="pause-card-content">
+        <div class="pause-icon-badge">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+          </svg>
+        </div>
+        <div class="pause-badge-pill">
+          <span class="pause-pulse-dot"></span>
+          <span>SESI DIJEDA SEMENTARA</span>
+        </div>
+        <h2 id="pause-modal-title" class="pause-title">PERTANDINGAN DIJEDA</h2>
+        <p class="pause-desc">
+          Panitia sedang menjeda jalannya kompetisi.<br>
+          Akses pengerjaan soal, pengisian jawaban, dan timer dibekukan sementara hingga sesi dilanjutkan kembali.
+        </p>
+        <div class="pause-alert-box">
+          <span class="pause-alert-icon">⚠️</span>
+          <span class="pause-alert-text">Harap tetap berada di layar ini. Halaman akan otomatis aktif kembali saat panitia melanjutkan sesi.</span>
+        </div>
+        <div class="pause-pulse-track">
+          <div class="pause-pulse-bar"></div>
+        </div>
       </div>
-      <div class="pause-badge-pill">
-        <span class="pause-pulse-dot"></span>
-        <span>SESI DIJEDA SEMENTARA</span>
-      </div>
-      <h2 id="pause-modal-title" class="pause-title">PERTANDINGAN DIJEDA</h2>
-      <p class="pause-desc">
-        Panitia sedang menjeda jalannya kompetisi.<br>
-        Akses pengerjaan soal, pengisian jawaban, dan timer dibekukan sementara hingga sesi dilanjutkan kembali.
-      </p>
-      <div class="pause-alert-box">
-        <span class="pause-alert-icon">⚠️</span>
-        <span class="pause-alert-text">Harap tetap berada di layar ini. Halaman akan otomatis aktif kembali saat panitia melanjutkan sesi.</span>
-      </div>
-      <div class="pause-pulse-track">
-        <div class="pause-pulse-bar"></div>
+
+      <div id="pause-card-resuming" class="pause-card-content hidden">
+        <div class="countdown-badge-pill">
+          <span class="countdown-pulse-dot"></span>
+          <span>PERSIAPAN MELANJUTKAN</span>
+        </div>
+        <h2 class="countdown-title">PERTANDINGAN DILANJUTKAN DALAM</h2>
+        <div class="countdown-display">
+          <span id="pause-countdown-number" class="countdown-number">5</span>
+        </div>
+        <p class="countdown-desc">
+          Bersiaplah! Waktu dan akses pengerjaan soal akan aktif kembali secara otomatis.
+        </p>
+        <div class="countdown-progress-track">
+          <div id="pause-countdown-bar" class="countdown-progress-bar"></div>
+        </div>
       </div>
     </div>
   </div>
