@@ -40,7 +40,11 @@ app.use((_req, res, next) => {
 app.use(express.json({ limit: '8mb' }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-app.get(['/mc', '/slides'], (_req, res) => {
+app.get(['/stage', '/screen/stage', '/presentasi', '/display'], (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'stage.html'));
+});
+
+app.get(['/mc', '/mc-control', '/slides', '/remote'], (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'mc.html'));
 });
 

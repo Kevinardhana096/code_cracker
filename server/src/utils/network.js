@@ -20,10 +20,11 @@ function printQRInfo(port) {
   const ips = getLocalIPs();
 
   const printUrls = (baseUrl) => {
-    console.log(`    Peserta:      ${baseUrl}`);
-    console.log(`    Admin:        ${baseUrl}/?admin=1`);
-    console.log(`    Leaderboard:  ${baseUrl}/?screen=leaderboard`);
-    console.log(`    Layar MC:     ${baseUrl}/mc`);
+    console.log(`    Peserta:        ${baseUrl}`);
+    console.log(`    Admin:          ${baseUrl}/?admin=1`);
+    console.log(`    Leaderboard:    ${baseUrl}/?screen=leaderboard`);
+    console.log(`    Layar Panggung: ${baseUrl}/stage  (Proyektor — Bersih tanpa tombol)`);
+    console.log(`    Konsol MC:      ${baseUrl}/mc     (Remote HP/Tablet MC)`);
   };
 
   console.log('  Localhost (laptop server):');

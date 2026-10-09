@@ -6,9 +6,25 @@ const { getTeamIdFromToken } = require('../middleware/auth');
 
 const teamSockets = new Map();
 
+let currentStageSlide = 0;
+
 function setupSocket(io) {
   io.on('connection', (socket) => {
     console.log(`[Socket] Connected: ${socket.id}`);
+
+    // Immediately send current stage slide to newly connected clients
+    socket.emit('stage:init', { slide: currentStageSlide });
+
+    socket.on('stage:get_slide', () => {
+      socket.emit('stage:slide', { slide: currentStageSlide });
+    });
+
+    socket.on('stage:set_slide', (data) => {
+      if (data && typeof data.slide === 'number' && data.slide >= 0) {
+        currentStageSlide = Math.floor(data.slide);
+        io.emit('stage:slide', { slide: currentStageSlide, source: socket.id });
+      }
+    });
 
     socket.on('auth', ({ team_id, token }) => {
       if (!team_id || !token) {

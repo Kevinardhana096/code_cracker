@@ -94,7 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === '1';
   const isLeaderboard = urlParams.get('screen') === 'leaderboard';
-  const isMc = urlParams.get('screen') === 'mc' || urlParams.get('screen') === 'slides';
+  const isStage = urlParams.get('screen') === 'stage' || urlParams.get('screen') === 'presentasi' || urlParams.get('screen') === 'slides';
+  const isMc = urlParams.get('screen') === 'mc' || urlParams.get('screen') === 'remote';
+
+  if (isStage) {
+    window.location.replace('/stage');
+    return;
+  }
 
   if (isMc) {
     window.location.replace('/mc');
