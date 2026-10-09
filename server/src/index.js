@@ -48,6 +48,10 @@ app.get(['/mc', '/mc-control', '/slides', '/remote'], (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'mc.html'));
 });
 
+app.get(['/sound-test', '/audio', '/sfx'], (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'sound-test.html'));
+});
+
 app.use('/api', authRoutes);
 app.use('/api', gameRoutes);
 app.use('/api/admin', adminRoutes);
